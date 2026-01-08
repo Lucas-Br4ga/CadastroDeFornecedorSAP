@@ -1,0 +1,680 @@
+{
+  "transacao": {
+    "codigo": {
+      "name": "okcd",
+      "id_completo": "wnd[0]/tbar[0]/okcd",
+      "tipo": "GuiTextField",
+      "descricao": "Código de transação",
+      "tooltip_palavras": ["transação", "transaction", "okcd"]
+    },
+    "grupo_criacao": {
+      "name": "BUS_JOEL_MAIN-CREATION_GROUP",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/subSCREEN_1000_HEADER_AREA:SAPLBUPA_DIALOG_JOEL:1500/cmbBUS_JOEL_MAIN-CREATION_GROUP",
+      "tipo": "GuiComboBox",
+      "descricao": "Grupo de criação",
+      "tooltip_palavras": ["grupo", "creation", "group"],
+      "valor_padrao": "ZVRE"
+    }
+  },
+  
+  "popup_tipo_fornecedor": {
+    "radio_nacional": {
+      "name": "SPOPLI-SELFLAG[1,0]",
+      "id_completo": "wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[1,0]",
+      "tipo": "GuiRadioButton",
+      "descricao": "Fornecedor nacional",
+      "tooltip_palavras": ["nacional", "domestic"]
+    },
+    "botao_confirmar": {
+      "name": "btn[0]",
+      "id_completo": "wnd[1]/tbar[0]/btn[0]",
+      "tipo": "GuiButton",
+      "descricao": "Confirmar popup",
+      "tooltip_palavras": ["confirmar", "ok", "enter"]
+    }
+  },
+
+  "abas": {
+    "dados_gerais": {
+      "name": "SCREEN_1100_TAB_01",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01",
+      "tipo": "GuiTab",
+      "descricao": "Aba Dados Gerais"
+    },
+    "identificacao": {
+      "name": "SCREEN_1100_TAB_03",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03",
+      "tipo": "GuiTab",
+      "descricao": "Aba Identificação"
+    },
+    "dados_bancarios": {
+      "name": "SCREEN_1100_TAB_05",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_05",
+      "tipo": "GuiTab",
+      "descricao": "Aba Dados Bancários"
+    }
+  },
+
+  "dados_gerais": {
+    "nome_empresa": {
+      "name": "BUT000-NAME_ORG1",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA02P02:SAPLBUD0:1200/txtBUT000-NAME_ORG1",
+      "tipo": "GuiTextField",
+      "descricao": "Nome da empresa / Razão Social",
+      "tooltip_palavras": ["nome", "name", "razão", "social", "empresa"],
+      "json_field": "empresa.razao_social",
+      "obrigatorio": true
+    },
+    "termo_pesquisa_1": {
+      "name": "BUS000FLDS-BU_SORT1_TXT",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA03P01:SAPLBUD0:1110/txtBUS000FLDS-BU_SORT1_TXT",
+      "tipo": "GuiTextField",
+      "descricao": "Termo de pesquisa 1",
+      "tooltip_palavras": ["pesquisa", "search", "termo"],
+      "json_field": "empresa.razao_social",
+      "obrigatorio": false
+    },
+    "termo_pesquisa_2": {
+      "name": "BUS000FLDS-BU_SORT2_TXT",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA03P01:SAPLBUD0:1110/txtBUS000FLDS-BU_SORT2_TXT",
+      "tipo": "GuiTextField",
+      "descricao": "Termo de pesquisa 2",
+      "tooltip_palavras": ["pesquisa", "search", "termo"],
+      "json_field": "empresa.nome_fantasia",
+      "obrigatorio": false
+    }
+  },
+
+  "endereco": {
+    "rua": {
+      "name": "ADDR1_DATA-STREET",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/ctxtADDR1_DATA-STREET",
+      "tipo": "GuiCTextField",
+      "descricao": "Rua",
+      "tooltip_palavras": ["rua", "street", "logradouro"],
+      "json_field": "endereco.rua",
+      "obrigatorio": true
+    },
+    "numero": {
+      "name": "ADDR1_DATA-HOUSE_NUM1",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/txtADDR1_DATA-HOUSE_NUM1",
+      "tipo": "GuiTextField",
+      "descricao": "Número",
+      "tooltip_palavras": ["número", "number", "num"],
+      "json_field": "endereco.numero",
+      "obrigatorio": true
+    },
+    "cep": {
+      "name": "ADDR1_DATA-POST_CODE1",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/txtADDR1_DATA-POST_CODE1",
+      "tipo": "GuiTextField",
+      "descricao": "CEP / Código Postal",
+      "tooltip_palavras": ["cep", "postal", "código"],
+      "json_field": "endereco.cep",
+      "obrigatorio": true
+    },
+    "cidade": {
+      "name": "ADDR1_DATA-CITY1",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/ctxtADDR1_DATA-CITY1",
+      "tipo": "GuiCTextField",
+      "descricao": "Cidade",
+      "tooltip_palavras": ["cidade", "city"],
+      "json_field": "endereco.cidade",
+      "obrigatorio": true
+    },
+    "pais": {
+      "name": "ADDR1_DATA-COUNTRY",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/ctxtADDR1_DATA-COUNTRY",
+      "tipo": "GuiCTextField",
+      "descricao": "País",
+      "tooltip_palavras": ["país", "country"],
+      "json_field": null,
+      "valor_padrao": "BR",
+      "obrigatorio": true
+    },
+    "estado": {
+      "name": "ADDR1_DATA-REGION",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/ctxtADDR1_DATA-REGION",
+      "tipo": "GuiCTextField",
+      "descricao": "Estado / Região",
+      "tooltip_palavras": ["estado", "região", "region", "uf"],
+      "json_field": "endereco.estado",
+      "obrigatorio": true,
+      "dispara_popup_cep": true
+    },
+    "complemento": {
+      "name": "ADDR1_DATA-HOUSE_NUM2",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/txtADDR1_DATA-HOUSE_NUM2",
+      "tipo": "GuiTextField",
+      "descricao": "Complemento",
+      "tooltip_palavras": ["complemento", "supplement"],
+      "json_field": "endereco.complemento",
+      "obrigatorio": false
+    },
+    "bairro": {
+      "name": "ADDR1_DATA-CITY2",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/txtADDR1_DATA-CITY2",
+      "tipo": "GuiTextField",
+      "descricao": "Bairro / Distrito",
+      "tooltip_palavras": ["bairro", "district", "distrito"],
+      "json_field": "endereco.bairro",
+      "obrigatorio": true
+    },
+    "zona_transporte": {
+      "name": "ADDR1_DATA-TRANSPZONE",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/ctxtADDR1_DATA-TRANSPZONE",
+      "tipo": "GuiCTextField",
+      "descricao": "Zona de Transporte",
+      "tooltip_palavras": ["zona", "transport", "transporte"],
+      "json_field": null,
+      "valor_padrao": "ZBR0000000",
+      "obrigatorio": true
+    },
+    "botao_fuso_horario": {
+      "name": "G_D0100_DUMMY_TIMEZONE",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/btnG_D0100_DUMMY_TIMEZONE",
+      "tipo": "GuiButton",
+      "descricao": "Botão Fuso Horário"
+    }
+  },
+
+  "comunicacao": {
+    "celular": {
+      "name": "SZA1_D0100-MOB_NUMBER",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/txtSZA1_D0100-MOB_NUMBER",
+      "tipo": "GuiTextField",
+      "descricao": "Telefone Celular",
+      "tooltip_palavras": ["celular", "telefone", "phone", "mobile"],
+      "json_field": "contato.celular",
+      "obrigatorio": false
+    },
+    "botao_celular": {
+      "name": "G_ICON_MOB",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/btnG_ICON_MOB",
+      "tipo": "GuiButton",
+      "descricao": "Botão Abrir Popup Telefone"
+    },
+    "email": {
+      "name": "SZA1_D0100-SMTP_ADDR",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/txtSZA1_D0100-SMTP_ADDR",
+      "tipo": "GuiTextField",
+      "descricao": "E-mail",
+      "tooltip_palavras": ["email", "e-mail", "smtp"],
+      "json_field": "contato.email_comercial",
+      "obrigatorio": true
+    },
+    "botao_email": {
+      "name": "G_ICON_SMTP",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/btnG_ICON_SMTP",
+      "tipo": "GuiButton",
+      "descricao": "Botão Abrir Popup E-mail"
+    },
+    "meio_comunicacao_padrao": {
+      "name": "ADDR1_DATA-DEFLT_COMM",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7016/subA05P01:SAPLBUA0:0400/subADDRESS:SAPLSZA1:0300/subCOUNTRY_SCREEN:SAPLSZA1:0301/cmbADDR1_DATA-DEFLT_COMM",
+      "tipo": "GuiComboBox",
+      "descricao": "Meio de Comunicação Padrão",
+      "tooltip_palavras": ["meio", "comunicação", "communication"],
+      "json_field": null,
+      "valor_padrao": "INT",
+      "obrigatorio": false
+    }
+  },
+
+  "popup_telefone": {
+    "botao_novo": {
+      "id_completo": "wnd[1]/tbar[0]/btn[13]",
+      "tipo": "GuiButton",
+      "descricao": "Novo telefone"
+    },
+    "campo_telefone": {
+      "name": "ADTEL-TEL_NUMBER[2,1]",
+      "id_completo": "wnd[1]/usr/tblSAPLSZA6T_CONTROL2/txtADTEL-TEL_NUMBER[2,1]",
+      "tipo": "GuiTextField",
+      "descricao": "Número de telefone na tabela"
+    },
+    "botao_confirmar": {
+      "id_completo": "wnd[1]/tbar[0]/btn[0]",
+      "tipo": "GuiButton",
+      "descricao": "Confirmar telefone"
+    }
+  },
+
+  "popup_email": {
+    "botao_novo": {
+      "id_completo": "wnd[1]/tbar[0]/btn[13]",
+      "tipo": "GuiButton",
+      "descricao": "Novo e-mail"
+    },
+    "campo_email": {
+      "name": "ADSMTP-SMTP_ADDR[0,1]",
+      "id_completo": "wnd[1]/usr/tblSAPLSZA6T_CONTROL6/txtADSMTP-SMTP_ADDR[0,1]",
+      "tipo": "GuiTextField",
+      "descricao": "Endereço de e-mail na tabela"
+    },
+    "botao_confirmar": {
+      "id_completo": "wnd[1]/tbar[0]/btn[0]",
+      "tipo": "GuiButton",
+      "descricao": "Confirmar e-mail"
+    }
+  },
+
+  "popup_cep": {
+    "label_linha": {
+      "name": "lbl[{col},{row}]",
+      "id_exemplo": "wnd[1]/usr/lbl[5,6]",
+      "tipo": "GuiLabel",
+      "descricao": "Label com código postal (iterar de 0 a 10)",
+      "regex_validacao": "^[A-Z]{2}\\s+\\d+$"
+    }
+  },
+
+  "identificacao": {
+    "setor_industrial": {
+      "name": "BUS_BUPA_INDUSTRY_SECTORS-ISEC[0,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA05P01:SAPLBUD0:1530/tblSAPLBUD0TCTRL_BUT0IS/ctxtBUS_BUPA_INDUSTRY_SECTORS-ISEC[0,0]",
+      "tipo": "GuiCTextField",
+      "descricao": "Setor Industrial",
+      "tooltip_palavras": ["setor", "industrial", "industry"],
+      "json_field": null,
+      "valor_padrao": "Z033",
+      "obrigatorio": true
+    },
+    "setor_industrial_padrao": {
+      "name": "BUS_BUPA_INDUSTRY_SECTORS-ISDEF[2,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA05P01:SAPLBUD0:1530/tblSAPLBUD0TCTRL_BUT0IS/chkBUS_BUPA_INDUSTRY_SECTORS-ISDEF[2,0]",
+      "tipo": "GuiCheckBox",
+      "descricao": "Setor Industrial Padrão",
+      "tooltip_palavras": ["padrão", "default"],
+      "json_field": null,
+      "valor_padrao": true,
+      "obrigatorio": true
+    },
+    "nif_tipo_cnpj": {
+      "name": "DFKKBPTAXNUM-TAXTYPE[0,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA07P01:SAPLBUPA_BUTX_DIALOG:0100/tblSAPLBUPA_BUTX_DIALOGTCTRL_BPTAX/ctxtDFKKBPTAXNUM-TAXTYPE[0,0]",
+      "tipo": "GuiCTextField",
+      "descricao": "Tipo NIF - CNPJ",
+      "json_field": null,
+      "valor_padrao": "BR1",
+      "obrigatorio": true
+    },
+    "nif_cnpj": {
+      "name": "DFKKBPTAXNUM-TAXNUMXL[2,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA07P01:SAPLBUPA_BUTX_DIALOG:0100/tblSAPLBUPA_BUTX_DIALOGTCTRL_BPTAX/txtDFKKBPTAXNUM-TAXNUMXL[2,0]",
+      "tipo": "GuiTextField",
+      "descricao": "CNPJ",
+      "tooltip_palavras": ["cnpj", "nif"],
+      "json_field": "empresa.cnpj",
+      "obrigatorio": true
+    },
+    "nif_tipo_inscricao_estadual": {
+      "name": "DFKKBPTAXNUM-TAXTYPE[0,1]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA07P01:SAPLBUPA_BUTX_DIALOG:0100/tblSAPLBUPA_BUTX_DIALOGTCTRL_BPTAX/ctxtDFKKBPTAXNUM-TAXTYPE[0,1]",
+      "tipo": "GuiCTextField",
+      "descricao": "Tipo NIF - Inscrição Estadual",
+      "json_field": null,
+      "valor_padrao": "BR3",
+      "obrigatorio": "condicional"
+    },
+    "nif_inscricao_estadual": {
+      "name": "DFKKBPTAXNUM-TAXNUMXL[2,1]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA07P01:SAPLBUPA_BUTX_DIALOG:0100/tblSAPLBUPA_BUTX_DIALOGTCTRL_BPTAX/txtDFKKBPTAXNUM-TAXNUMXL[2,1]",
+      "tipo": "GuiTextField",
+      "descricao": "Inscrição Estadual",
+      "tooltip_palavras": ["inscrição", "estadual"],
+      "json_field": "empresa.inscricao_estadual",
+      "obrigatorio": "condicional"
+    },
+    "nif_tipo_inscricao_municipal": {
+      "name": "DFKKBPTAXNUM-TAXTYPE[0,2]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA07P01:SAPLBUPA_BUTX_DIALOG:0100/tblSAPLBUPA_BUTX_DIALOGTCTRL_BPTAX/ctxtDFKKBPTAXNUM-TAXTYPE[0,2]",
+      "tipo": "GuiCTextField",
+      "descricao": "Tipo NIF - Inscrição Municipal",
+      "json_field": null,
+      "valor_padrao": "BR4",
+      "obrigatorio": "condicional"
+    },
+    "nif_inscricao_municipal": {
+      "name": "DFKKBPTAXNUM-TAXNUMXL[2,2]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_03/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7013/subA07P01:SAPLBUPA_BUTX_DIALOG:0100/tblSAPLBUPA_BUTX_DIALOGTCTRL_BPTAX/txtDFKKBPTAXNUM-TAXNUMXL[2,2]",
+      "tipo": "GuiTextField",
+      "descricao": "Inscrição Municipal",
+      "tooltip_palavras": ["inscrição", "municipal"],
+      "json_field": "empresa.inscricao_municipal",
+      "obrigatorio": "condicional"
+    }
+  },
+
+  "dados_bancarios": {
+    "id_banco": {
+      "name": "GT_BUT0BK-BKVID[0,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_05/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7014/subA02P01:SAPLBUD0:1500/tblSAPLBUD0TCTRL_BUT0BK/txtGT_BUT0BK-BKVID[0,0]",
+      "tipo": "GuiTextField",
+      "descricao": "ID do Banco",
+      "json_field": null,
+      "valor_padrao": "BR01",
+      "obrigatorio": true
+    },
+    "pais_banco": {
+      "name": "GT_BUT0BK-BANKS[1,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_05/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7014/subA02P01:SAPLBUD0:1500/tblSAPLBUD0TCTRL_BUT0BK/ctxtGT_BUT0BK-BANKS[1,0]",
+      "tipo": "GuiCTextField",
+      "descricao": "País do Banco",
+      "json_field": null,
+      "valor_padrao": "BR",
+      "obrigatorio": true
+    },
+    "chave_banco": {
+      "name": "GT_BUT0BK-BANKL[2,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_05/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7014/subA02P01:SAPLBUD0:1500/tblSAPLBUD0TCTRL_BUT0BK/ctxtGT_BUT0BK-BANKL[2,0]",
+      "tipo": "GuiCTextField",
+      "descricao": "Chave do Banco (abre popup com F4)",
+      "tooltip_palavras": ["chave", "banco", "bank"],
+      "json_field": "bancario.codigo_banco + bancario.agencia",
+      "obrigatorio": true,
+      "formato": "*{codigo_banco}*{agencia}*"
+    },
+    "conta_bancaria": {
+      "name": "GT_BUT0BK-BANKN[3,0]",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1101/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_05/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7014/subA02P01:SAPLBUD0:1500/tblSAPLBUD0TCTRL_BUT0BK/txtGT_BUT0BK-BANKN[3,0]",
+      "tipo": "GuiTextField",
+      "descricao": "Conta Bancária",
+      "tooltip_palavras": ["conta", "bancária", "account"],
+      "json_field": "bancario.conta_corrente",
+      "obrigatorio": true
+    }
+  },
+
+  "popup_chave_banco": {
+    "campo_busca": {
+      "name": "RF02B-BANKL",
+      "id_completo": "wnd[1]/usr/txtRF02B-BANKL",
+      "tipo": "GuiTextField",
+      "descricao": "Campo de busca da chave do banco",
+      "formato": "*{codigo_banco}*{agencia}*"
+    },
+    "botao_confirmar": {
+      "id_completo": "wnd[1]/tbar[0]/btn[0]",
+      "tipo": "GuiButton",
+      "descricao": "Confirmar seleção"
+    }
+  },
+
+  "empresa": {
+    "botao_adicionar_papel": {
+      "id_completo": "wnd[0]/tbar[1]/btn[26]",
+      "tipo": "GuiButton",
+      "descricao": "Adicionar papel (Empresa)"
+    },
+    "botao_trocar_empresa": {
+      "name": "PUSH_FSBP_CC_SWITCH",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/subSCREEN_1100_SUB_HEADER_AREA:SAPLFS_BP_ECC_DIALOGUE:0001/btnPUSH_FSBP_CC_SWITCH",
+      "tipo": "GuiButton",
+      "descricao": "Trocar Empresa"
+    },
+    "codigo_empresa": {
+      "name": "BS001-BUKRS",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/subSCREEN_1100_SUB_HEADER_AREA:SAPLFS_BP_ECC_DIALOGUE:0001/ctxtBS001-BUKRS",
+      "tipo": "GuiCTextField",
+      "descricao": "Código da Empresa",
+      "tooltip_palavras": ["empresa", "company", "bukrs"],
+      "json_field": null,
+      "valores_possiveis": ["BR01", "BR04", "BR20"],
+      "obrigatorio": true
+    },
+    "conta_conciliacao": {
+      "name": "GS_LFB1-AKONT",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7009/subA02P01:SAPLCVI_FS_UI_VENDOR_CC:0030/ctxtGS_LFB1-AKONT",
+      "tipo": "GuiCTextField",
+      "descricao": "Conta de Conciliação",
+      "tooltip_palavras": ["conta", "conciliação", "reconciliation"],
+      "json_field": null,
+      "valor_padrao": "44000000",
+      "obrigatorio": true
+    },
+    "chave_ordenacao": {
+      "name": "GS_LFB1-ZUAWA",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7009/subA02P03:SAPLCVI_FS_UI_VENDOR_CC:0031/ctxtGS_LFB1-ZUAWA",
+      "tipo": "GuiCTextField",
+      "descricao": "Chave de Ordenação",
+      "tooltip_palavras": ["chave", "ordenação", "sort"],
+      "json_field": null,
+      "valor_padrao": "001",
+      "obrigatorio": true
+    },
+    "grupo_admin_tesouraria": {
+      "name": "GS_LFB1-FDGRV",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7009/subA02P06:SAPLCVI_FS_UI_VENDOR_CC:0034/ctxtGS_LFB1-FDGRV",
+      "tipo": "GuiCTextField",
+      "descricao": "Grupo Admin. Tesouraria",
+      "tooltip_palavras": ["grupo", "tesouraria", "treasury"],
+      "json_field": null,
+      "valor_padrao": "BR_P_3L",
+      "obrigatorio": true
+    },
+    "condicoes_pagamento": {
+      "name": "GS_LFB1-ZTERM",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_02/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7008/subA02P01:SAPLCVI_FS_UI_VENDOR_CC:0040/ctxtGS_LFB1-ZTERM",
+      "tipo": "GuiCTextField",
+      "descricao": "Condições de Pagamento",
+      "tooltip_palavras": ["condições", "pagamento", "payment", "terms"],
+      "json_field": "geral.prazo_pagamento",
+      "obrigatorio": true
+    },
+    "verificacao_fatura_duplic": {
+      "name": "GS_LFB1-REPRF",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_02/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7008/subA02P02:SAPLCVI_FS_UI_VENDOR_CC:0058/chkGS_LFB1-REPRF",
+      "tipo": "GuiCheckBox",
+      "descricao": "Verificação Fatura Duplicada",
+      "tooltip_palavras": ["verificação", "fatura", "duplicada"],
+      "json_field": null,
+      "valor_padrao": true,
+      "obrigatorio": true
+    },
+    "formas_pagamento": {
+      "name": "GS_LFB1-ZWELS",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_02/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7008/subA03P01:SAPLCVI_FS_UI_VENDOR_CC:0041/ctxtGS_LFB1-ZWELS",
+      "tipo": "GuiCTextField",
+      "descricao": "Formas de Pagamento",
+      "tooltip_palavras": ["formas", "pagamento", "payment", "methods"],
+      "json_field": null,
+      "valor_padrao": "BCFITU",
+      "obrigatorio": true
+    },
+    "irf_categorias": {
+      "fc": {
+        "tipo": {"name": "CVIS_LFBW-WITHT[0,0]", "valor": "FC"},
+        "codigo": {"name": "CVIS_LFBW-WT_WITHCD[2,0]", "valor": "FC"},
+        "sujeito": {"name": "CVIS_LFBW-WT_SUBJCT[3,0]", "valor": true}
+      },
+      "in": {
+        "tipo": {"name": "CVIS_LFBW-WITHT[0,1]", "valor": "IN"},
+        "codigo": {"name": "CVIS_LFBW-WT_WITHCD[2,1]", "valor": ""},
+        "sujeito": {"name": "CVIS_LFBW-WT_SUBJCT[3,1]", "valor": true}
+      },
+      "is": {
+        "tipo": {"name": "CVIS_LFBW-WITHT[0,2]", "valor": "IS"},
+        "codigo": {"name": "CVIS_LFBW-WT_WITHCD[2,2]", "valor": "IS"},
+        "sujeito": {"name": "CVIS_LFBW-WT_SUBJCT[3,2]", "valor": true}
+      },
+      "lc": {
+        "tipo": {"name": "CVIS_LFBW-WITHT[0,3]", "valor": "LC"},
+        "codigo": {"name": "CVIS_LFBW-WT_WITHCD[2,3]", "valor": "LC"},
+        "sujeito": {"name": "CVIS_LFBW-WT_SUBJCT[3,3]", "valor": true}
+      },
+      "ri": {
+        "tipo": {"name": "CVIS_LFBW-WITHT[0,4]", "valor": "RI"},
+        "codigo": {"name": "CVIS_LFBW-WT_WITHCD[2,4]", "valor": "RI"},
+        "sujeito": {"name": "CVIS_LFBW-WT_SUBJCT[3,4]", "valor": true}
+      },
+      "sp": {
+        "tipo": {"name": "CVIS_LFBW-WITHT[0,5]", "valor": "SP"},
+        "codigo": {"name": "CVIS_LFBW-WT_WITHCD[2,5]", "valor": "SP"},
+        "sujeito": {"name": "CVIS_LFBW-WT_SUBJCT[3,5]", "valor": true}
+      }
+    }
+  },
+
+  "compras": {
+    "papel_funcao": {
+      "name": "BUS_JOEL_MAIN-PARTNER_ROLE",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/subSCREEN_1100_ROLE_AND_TIME_AREA:SAPLBUPA_DIALOG_JOEL:1110/cmbBUS_JOEL_MAIN-PARTNER_ROLE",
+      "tipo": "GuiComboBox",
+      "descricao": "Papel/Função do Parceiro",
+      "json_field": null,
+      "valor_padrao": "FLVN01",
+      "obrigatorio": true
+    },
+    "organizacao_compras": {
+      "name": "GV_PURCHASING_ORG",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/subSCREEN_1100_SUB_HEADER_AREA:SAPLCVI_FS_UI_VENDOR_PORG:0070/ctxtGV_PURCHASING_ORG",
+      "tipo": "GuiCTextField",
+      "descricao": "Organização de Compras",
+      "tooltip_palavras": ["organização", "compras", "purchasing"],
+      "json_field": null,
+      "valor_padrao": "0009",
+      "obrigatorio": true
+    },
+    "revisao_fatura": {
+      "name": "GS_LFM1-WEBRE",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA04P03:SAPLCVI_FS_UI_VENDOR_PORG:0074/chkGS_LFM1-WEBRE",
+      "tipo": "GuiCheckBox",
+      "descricao": "Revisão Fatura Baseada EM",
+      "tooltip_palavras": ["revisão", "fatura"],
+      "json_field": null,
+      "valor_padrao": true,
+      "obrigatorio": true
+    },
+    "revisao_servicos": {
+      "name": "GS_LFM1-LEBRE",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA05P01:SAPLCVI_FS_UI_VENDOR_ENH:0048/chkGS_LFM1-LEBRE",
+      "tipo": "GuiCheckBox",
+      "descricao": "Rev. Fats. Baseada Servs.",
+      "tooltip_palavras": ["revisão", "serviços"],
+      "json_field": null,
+      "valor_padrao": true,
+      "obrigatorio": true
+    },
+    "moeda_ordem": {
+      "name": "GS_LFM1-WAERS",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA02P01:SAPLCVI_FS_UI_VENDOR_PORG:0076/ctxtGS_LFM1-WAERS",
+      "tipo": "GuiCTextField",
+      "descricao": "Moeda da Ordem",
+      "tooltip_palavras": ["moeda", "currency"],
+      "json_field": null,
+      "valor_padrao": "BRL",
+      "obrigatorio": true
+    },
+    "condicoes_pagamento_compras": {
+      "name": "GS_LFM1-ZTERM",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA02P02:SAPLCVI_FS_UI_VENDOR_PORG:0086/ctxtGS_LFM1-ZTERM",
+      "tipo": "GuiCTextField",
+      "descricao": "Condições de Pagamento",
+      "tooltip_palavras": ["condições", "pagamento"],
+      "json_field": "geral.prazo_pagamento",
+      "obrigatorio": true
+    },
+    "incoterms": {
+      "name": "GS_LFM1-INCO1",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA02P03:SAPLCVI_FS_UI_VENDOR_PORG:0085/ctxtGS_LFM1-INCO1",
+      "tipo": "GuiCTextField",
+      "descricao": "Incoterms",
+      "tooltip_palavras": ["incoterms"],
+      "json_field": "geral.modalidade_frete",
+      "obrigatorio": true
+    },
+    "local_incoterms": {
+      "name": "GS_LFM1-INCO2_L",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA02P03:SAPLCVI_FS_UI_VENDOR_PORG:0085/ctxtGS_LFM1-INCO2_L",
+      "tipo": "GuiCTextField",
+      "descricao": "Local Incoterms",
+      "tooltip_palavras": ["local", "incoterms"],
+      "json_field": null,
+      "valor_padrao": "FABRICA",
+      "obrigatorio": true
+    },
+    "controle_data_preco": {
+      "name": "GS_LFM1-MEPRF",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA07P04:SAPLCVI_FS_UI_VENDOR_ENH:0028/ctxtGS_LFM1-MEPRF",
+      "tipo": "GuiCTextField",
+      "descricao": "Controle da Data do Preço",
+      "tooltip_palavras": ["controle", "data", "preço"],
+      "json_field": null,
+      "valor_padrao": "1",
+      "obrigatorio": true
+    },
+    "controle_confirmacao": {
+      "name": "GS_LFM1-BSTAE",
+      "id_completo": "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/ssubSCREEN_1000_WORKAREA_AREA:SAPLBUPA_DIALOG_JOEL:1100/ssubSCREEN_1100_MAIN_AREA:SAPLBUPA_DIALOG_JOEL:1102/tabsGS_SCREEN_1100_TABSTRIP/tabpSCREEN_1100_TAB_01/ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032/subA07P07:SAPLCVI_FS_UI_VENDOR_ENH:0010/ctxtGS_LFM1-BSTAE",
+      "tipo": "GuiCTextField",
+      "descricao": "Controle Confirmação",
+      "tooltip_palavras": ["controle", "confirmação"],
+      "json_field": null,
+      "valor_padrao": "Z004",
+      "obrigatorio": true
+    }
+  },
+
+  "botoes": {
+    "salvar": {
+      "id_completo": "wnd[0]/tbar[0]/btn[11]",
+      "tipo": "GuiButton",
+      "descricao": "Salvar (Ctrl+S)",
+      "tooltip_palavras": ["salvar", "save"]
+    },
+    "voltar": {
+      "id_completo": "wnd[0]/tbar[0]/btn[3]",
+      "tipo": "GuiButton",
+      "descricao": "Voltar (F3)"
+    }
+  },
+
+  "anexo": {
+    "menu_servicos": {
+      "descricao": "Menu de serviços (GOS)",
+      "acao": "pressContextButton",
+      "parametro": "%GOS_TOOLBOX"
+    },
+    "criar_anexo": {
+      "descricao": "Criar anexo",
+      "acao": "selectContextMenuItem",
+      "parametro": "%GOS_ARL_LINK"
+    },
+    "selecionar_pc_area_trabalho": {
+      "name": "HITLIST",
+      "item_id": "0000000008",
+      "descricao": "Selecionar PC/Área de trabalho"
+    },
+    "campo_caminho": {
+      "name": "DY_PATH",
+      "id_completo": "wnd[2]/usr/txtDY_PATH",
+      "tipo": "GuiTextField",
+      "descricao": "Caminho do arquivo"
+    },
+    "campo_nome_arquivo": {
+      "name": "DY_FILENAME",
+      "id_completo": "wnd[2]/usr/txtDY_FILENAME",
+      "tipo": "GuiTextField",
+      "descricao": "Nome do arquivo"
+    },
+    "botao_confirmar": {
+      "id_completo": "wnd[2]/tbar[0]/btn[0]",
+      "tipo": "GuiButton",
+      "descricao": "Confirmar anexo"
+    }
+  },
+
+  "metadados": {
+    "versao": "1.0",
+    "data_criacao": "2024-12-14",
+    "descricao": "Mapeamento completo de campos SAP para cadastro de fornecedor XK01",
+    "notas": [
+      "Usar findByName() com o campo 'name' para busca robusta",
+      "Validar sempre com tooltip_palavras",
+      "Campos com 'obrigatorio: condicional' dependem de dados no JSON",
+      "Empresas BR01, BR04, BR20 devem ser cadastradas em loop",
+      "IRF tem 6 categorias fixas: FC, IN, IS, LC, RI, SP"
+    ]
+  }
+}

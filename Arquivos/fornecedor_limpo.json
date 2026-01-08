@@ -1,0 +1,34 @@
+{
+    "empresa": {
+        "razao_social": "ISOCALD SERVICE LTDA",
+        "nome_fantasia": "ISOCALD SERVICE",
+        "cnpj": "56006223000110",
+        "inscricao_estadual": "0049475990038",
+        "inscricao_municipal": ""
+    },
+    "endereco": {
+        "rua": "ROD BR",
+        "numero": "354",
+        "complemento": "970-KM476",
+        "bairro": "CALCITA",
+        "cidade": "ARCOS",
+        "estado": "MG",
+        "cep": "35600-350"
+    },
+    "contato": {
+        "celular": "(37) 3261-7791 / (31) 99837-9870",
+        "email_comercial": "comercial1.service@isocald.com.br",
+        "email_fiscal": "iscal.service@isocald.com.br",
+        "celular_secundario": ""
+    },
+    "bancario": {
+        "banco": "",
+        "agencia": "3481",
+        "conta_corrente": "13002645-1",
+        "codigo_banco": "033"
+    },
+    "geral": {
+        "prazo_pagamento": "BRFM",
+        "modalidade_frete": "CIF"
+    }
+}
