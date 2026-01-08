@@ -1,11 +1,17 @@
 """
 Padronizador de dados de fornecedores para automação SAP.
 Garante que todos os dados estejam no formato correto antes do envio.
+
+VERSÃO 3.0:
+- Todos os textos convertidos para MAIÚSCULAS
+- Conversão de prazo de pagamento (dias → código)
+- Conversão de estados (extenso → sigla)
+- Preservação inteligente do código do banco
 """
 import json
 import re
 from pathlib import Path
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Optional
 from .PadronizadorInscricaoEstadual import PadronizadorInscricaoEstadual
 
 
@@ -14,6 +20,68 @@ class PadronizadorDados:
     Padroniza dados de fornecedor para garantir compatibilidade com SAP.
     Aplica regras específicas por campo e por estado.
     """
+    
+    # Mapa de conversão: dias → código de prazo
+    MAPA_PRAZO_PAGAMENTO = {
+        0: "BRFAA",    # Vista
+        5: "BRFB",
+        10: "BRFC",
+        15: "BRFD",
+        20: "BRFE",
+        25: "BRFF",
+        30: "BRFG",
+        35: "BRFH",
+        40: "BRFI",
+        45: "BRFJ",
+        50: "BRFK",
+        55: "BRFL",
+        60: "BRFM",
+        65: "BRFN",
+        70: "BRFO",
+        75: "BRFP",
+        80: "BRFQ",
+        85: "BRFR",
+        90: "BRFS"
+    }
+    
+    # Mapa de conversão: estado por extenso → sigla
+    MAPA_ESTADOS = {
+        "ACRE": "AC",
+        "ALAGOAS": "AL",
+        "AMAPA": "AP",
+        "AMAZONAS": "AM",
+        "BAHIA": "BA",
+        "CEARA": "CE",
+        "DISTRITO FEDERAL": "DF",
+        "BRASILIA": "DF",
+        "ESPIRITO SANTO": "ES",
+        "GOIAS": "GO",
+        "MARANHAO": "MA",
+        "MATO GROSSO": "MT",
+        "MATO GROSSO DO SUL": "MS",
+        "MINAS GERAIS": "MG",
+        "PARA": "PA",
+        "PARAIBA": "PB",
+        "PARANA": "PR",
+        "PERNAMBUCO": "PE",
+        "PIAUI": "PI",
+        "RIO DE JANEIRO": "RJ",
+        "RIO GRANDE DO NORTE": "RN",
+        "RIO GRANDE DO SUL": "RS",
+        "RONDONIA": "RO",
+        "RORAIMA": "RR",
+        "SANTA CATARINA": "SC",
+        "SAO PAULO": "SP",
+        "SERGIPE": "SE",
+        "TOCANTINS": "TO"
+    }
+    
+    # UFs válidas
+    UFS_VALIDAS = [
+        'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+        'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+        'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+    ]
     
     def __init__(self, json_path: Path):
         """
@@ -41,7 +109,7 @@ class PadronizadorDados:
             with open(self.json_path, 'r', encoding='utf-8') as f:
                 self.dados = json.load(f)
             
-            print(f"[INFO] Dados carregados: {self.json_path}")
+            print(f"[INFO] Dados carregados: {self.json_path.name}")
             return True
             
         except json.JSONDecodeError as e:
@@ -67,7 +135,7 @@ class PadronizadorDados:
             with open(self.json_path, 'w', encoding='utf-8') as f:
                 json.dump(self.dados, f, ensure_ascii=False, indent=4)
             
-            print(f"[INFO] Dados padronizados salvos: {self.json_path}")
+            print(f"[INFO] Dados padronizados salvos: {self.json_path.name}")
             return True
             
         except Exception as e:
@@ -183,7 +251,7 @@ class PadronizadorDados:
     
     def padronizar_inscricao_municipal(self, inscricao: str) -> str:
         """
-        Padroniza Inscrição Municipal: apenas dígitos.
+        Padroniza Inscrição Municipal: apenas dígitos ou ISENTO.
         
         Args:
             inscricao: Inscrição Municipal original
@@ -203,40 +271,55 @@ class PadronizadorDados:
         
         return digitos
     
+    def extrair_codigo_banco(self, banco: str) -> str:
+        """
+        Extrai código do banco do texto.
+        
+        Args:
+            banco: String com formato "CODIGO - NOME" ou "CODIGO NOME"
+            
+        Returns:
+            Código do banco (3 dígitos) ou vazio
+        """
+        if not banco:
+            return ""
+        
+        banco_str = str(banco).strip()
+        
+        # Tenta padrão "XXX - NOME"
+        match = re.match(r'^(\d{3})\s*-\s*', banco_str)
+        if match:
+            return match.group(1)
+        
+        # Tenta só dígitos iniciais "XXX"
+        match = re.match(r'^(\d{3})', banco_str)
+        if match:
+            return match.group(1)
+        
+        return ""
+    
     def padronizar_banco(self, banco: str) -> Tuple[str, str]:
         """
-        Padroniza dados bancários: extrai código e nome.
+        Padroniza dados bancários: extrai código e mantém texto completo em MAIÚSCULAS.
         
         Args:
             banco: String com formato "CODIGO - NOME DO BANCO"
             
         Returns:
-            Tupla (codigo, nome_banco)
+            Tupla (codigo, nome_banco_maiusculo)
         """
         if not banco:
             return "", ""
         
-        banco_str = str(banco).strip()
+        banco_str = str(banco).strip().upper()
+        codigo = self.extrair_codigo_banco(banco_str)
         
-        # Tenta extrair código do formato "XXX - NOME"
-        match = re.match(r'^(\d{3})\s*-\s*(.+)$', banco_str)
+        if not codigo:
+            aviso = f"Código do banco não identificado em: '{banco_str}'"
+            self.avisos.append(aviso)
+            print(f"[AVISO] {aviso}")
         
-        if match:
-            codigo = match.group(1)
-            nome = match.group(2).strip()
-            return codigo, banco_str  # Retorna formato completo
-        
-        # Se não encontrou padrão, tenta extrair só dígitos iniciais
-        match_codigo = re.match(r'^(\d{3})', banco_str)
-        if match_codigo:
-            codigo = match_codigo.group(1)
-            return codigo, banco_str
-        
-        aviso = f"Formato de banco não reconhecido: '{banco_str}'"
-        self.avisos.append(aviso)
-        print(f"[AVISO] {aviso}")
-        
-        return "", banco_str
+        return codigo, banco_str
     
     def padronizar_agencia(self, agencia: str) -> str:
         """
@@ -290,14 +373,14 @@ class PadronizadorDados:
     
     def padronizar_texto_maiuscula(self, texto: str, max_length: int = None) -> str:
         """
-        Padroniza texto: converte para maiúsculas e remove espaços extras.
+        Padroniza texto: converte para MAIÚSCULAS e remove espaços extras.
         
         Args:
             texto: Texto original
             max_length: Tamanho máximo permitido (None = sem limite)
             
         Returns:
-            Texto padronizado
+            Texto padronizado em MAIÚSCULAS
         """
         if not texto:
             return ""
@@ -313,34 +396,107 @@ class PadronizadorDados:
         
         return texto_limpo
     
-    def padronizar_estado(self, estado: str) -> str:
+    def converter_prazo_pagamento(self, prazo: str) -> str:
         """
-        Padroniza sigla do estado: 2 letras maiúsculas.
+        Converte prazo de pagamento para código SAP.
+        
+        Exemplos:
+            "60 dias" → "BRFM"
+            "30" → "BRFG"
+            "vista" → "BRFAA"
+            "BRFM" → "BRFM" (já é código)
         
         Args:
-            estado: Estado original
+            prazo: Prazo em texto ou número
             
         Returns:
-            Estado padronizado
+            Código do prazo (BRFXX) em MAIÚSCULAS
+        """
+        if not prazo:
+            return ""
+        
+        prazo_str = str(prazo).strip().upper()
+        
+        # Se já está no formato BRFXX, retorna
+        if re.match(r'^BRF[A-Z]{1,2}$', prazo_str):
+            print(f"[INFO] Prazo já em formato código: {prazo_str}")
+            return prazo_str
+        
+        # Trata "VISTA" ou "À VISTA"
+        if "VISTA" in prazo_str:
+            print(f"[INFO] Prazo convertido: '{prazo}' → 'BRFAA' (VISTA)")
+            return "BRFAA"
+        
+        # Extrai número de dias
+        match = re.search(r'(\d+)', prazo_str)
+        if match:
+            dias = int(match.group(1))
+            
+            # Busca código exato
+            if dias in self.MAPA_PRAZO_PAGAMENTO:
+                codigo = self.MAPA_PRAZO_PAGAMENTO[dias]
+                print(f"[INFO] Prazo convertido: '{prazo}' → '{codigo}' ({dias} dias)")
+                return codigo
+            else:
+                aviso = f"Prazo de {dias} dias não tem código mapeado. Valores válidos: {sorted(self.MAPA_PRAZO_PAGAMENTO.keys())}"
+                self.avisos.append(aviso)
+                print(f"[AVISO] {aviso}")
+                return prazo_str
+        
+        # Não conseguiu identificar
+        aviso = f"Formato de prazo não reconhecido: '{prazo}'"
+        self.avisos.append(aviso)
+        print(f"[AVISO] {aviso}")
+        return prazo_str
+    
+    def converter_estado(self, estado: str) -> str:
+        """
+        Converte estado por extenso para sigla.
+        
+        Exemplos:
+            "Minas Gerais" → "MG"
+            "São Paulo" → "SP"
+            "MG" → "MG" (já é sigla)
+        
+        Args:
+            estado: Estado por extenso ou sigla
+            
+        Returns:
+            Sigla do estado (UF) em MAIÚSCULAS
         """
         if not estado:
             return ""
         
-        estado_limpo = str(estado).strip().upper()
+        estado_str = str(estado).strip().upper()
         
-        # Valida UF
-        ufs_validas = [
-            'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-            'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-            'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
-        ]
+        # Remove acentos para comparação
+        estado_normalizado = estado_str
+        for acento, sem_acento in [
+            ('Á', 'A'), ('À', 'A'), ('Ã', 'A'), ('Â', 'A'),
+            ('É', 'E'), ('Ê', 'E'),
+            ('Í', 'I'),
+            ('Ó', 'O'), ('Ô', 'O'), ('Õ', 'O'),
+            ('Ú', 'U'), ('Ü', 'U'),
+            ('Ç', 'C')
+        ]:
+            estado_normalizado = estado_normalizado.replace(acento, sem_acento)
         
-        if estado_limpo not in ufs_validas:
-            aviso = f"Estado inválido: '{estado_limpo}'"
-            self.avisos.append(aviso)
-            print(f"[AVISO] {aviso}")
+        # Se já é uma UF válida, retorna
+        if estado_normalizado in self.UFS_VALIDAS:
+            print(f"[INFO] Estado já em formato UF: {estado_normalizado}")
+            return estado_normalizado
         
-        return estado_limpo
+        # Busca no mapa
+        if estado_normalizado in self.MAPA_ESTADOS:
+            uf = self.MAPA_ESTADOS[estado_normalizado]
+            print(f"[INFO] Estado convertido: '{estado}' → '{uf}'")
+            return uf
+        
+        # Não encontrou
+        aviso = f"Estado não reconhecido: '{estado}'. Esperado sigla (UF) ou nome por extenso"
+        self.avisos.append(aviso)
+        print(f"[AVISO] {aviso}")
+        return estado_str
     
     def executar(self) -> Tuple[bool, str]:
         """
@@ -350,7 +506,7 @@ class PadronizadorDados:
             Tupla (sucesso, mensagem)
         """
         print("\n" + "="*70)
-        print("INICIANDO PADRONIZAÇÃO DE DADOS")
+        print("INICIANDO PADRONIZAÇÃO DE DADOS (v3.0)")
         print("="*70)
         
         # Limpa listas de avisos/erros
@@ -385,25 +541,25 @@ class PadronizadorDados:
                 self.dados['empresa']['cnpj']
             )
         
+        if 'inscricao_municipal' in self.dados['empresa']:
+            self.dados['empresa']['inscricao_municipal'] = self.padronizar_inscricao_municipal(
+                self.dados['empresa']['inscricao_municipal']
+            )
+        
         # === ENDEREÇO ===
         print("[PADRONIZAÇÃO] Endereço...")
         
+        # PRIMEIRO converte estado (por extenso → sigla)
         if 'estado' in self.dados['endereco']:
-            self.dados['endereco']['estado'] = self.padronizar_estado(
-                self.dados['endereco']['estado']
-            )
+            estado_original = self.dados['endereco']['estado']
+            self.dados['endereco']['estado'] = self.converter_estado(estado_original)
         
-        # Padroniza IE DEPOIS de padronizar o estado
+        # DEPOIS padroniza IE usando o estado já convertido
         if 'inscricao_estadual' in self.dados['empresa']:
             estado = self.dados['endereco'].get('estado', '')
             self.dados['empresa']['inscricao_estadual'] = self.padronizar_inscricao_estadual(
                 self.dados['empresa']['inscricao_estadual'],
                 estado
-            )
-        
-        if 'inscricao_municipal' in self.dados['empresa']:
-            self.dados['empresa']['inscricao_municipal'] = self.padronizar_inscricao_municipal(
-                self.dados['empresa']['inscricao_municipal']
             )
         
         if 'rua' in self.dados['endereco']:
@@ -457,12 +613,27 @@ class PadronizadorDados:
         # === BANCÁRIO ===
         print("[PADRONIZAÇÃO] Dados bancários...")
         
+        # PROTEÇÃO: Preserva codigo_banco se já existir
+        codigo_banco_existente = self.dados['bancario'].get('codigo_banco', '').strip()
+        
         if 'banco' in self.dados['bancario']:
-            codigo, nome_completo = self.padronizar_banco(
+            codigo_extraido, nome_completo = self.padronizar_banco(
                 self.dados['bancario']['banco']
             )
-            self.dados['bancario']['codigo_banco'] = codigo
+            
+            # Prioriza: codigo_banco existente > codigo_extraido > vazio
+            if codigo_banco_existente:
+                print(f"[INFO] Preservando código do banco existente: {codigo_banco_existente}")
+                self.dados['bancario']['codigo_banco'] = codigo_banco_existente
+            elif codigo_extraido:
+                print(f"[INFO] Código do banco extraído: {codigo_extraido}")
+                self.dados['bancario']['codigo_banco'] = codigo_extraido
+            
             self.dados['bancario']['banco'] = nome_completo
+        elif codigo_banco_existente:
+            # Só tinha codigo_banco, sem campo banco
+            print(f"[INFO] Mantendo código do banco: {codigo_banco_existente}")
+            self.dados['bancario']['codigo_banco'] = codigo_banco_existente
         
         if 'agencia' in self.dados['bancario']:
             self.dados['bancario']['agencia'] = self.padronizar_agencia(
@@ -477,11 +648,12 @@ class PadronizadorDados:
         # === GERAL ===
         print("[PADRONIZAÇÃO] Informações gerais...")
         
+        # Converte prazo de pagamento (dias → código)
         if 'prazo_pagamento' in self.dados['geral']:
-            self.dados['geral']['prazo_pagamento'] = self.padronizar_texto_maiuscula(
-                self.dados['geral']['prazo_pagamento']
-            )
+            prazo_original = self.dados['geral']['prazo_pagamento']
+            self.dados['geral']['prazo_pagamento'] = self.converter_prazo_pagamento(prazo_original)
         
+        # Modalidade de frete em MAIÚSCULAS
         if 'modalidade_frete' in self.dados['geral']:
             self.dados['geral']['modalidade_frete'] = self.padronizar_texto_maiuscula(
                 self.dados['geral']['modalidade_frete']
@@ -534,7 +706,7 @@ if __name__ == "__main__":
     from pathlib import Path
     
     # Testa com JSON de exemplo
-    json_teste = Path(__file__).parent.parent / "fornecedor_limpo.json"
+    json_teste = Path(__file__).parent.parent / "Arquivos" / "fornecedor_limpo.json"
     
     if json_teste.exists():
         print(f"Testando padronização em: {json_teste}\n")
