@@ -1,15 +1,19 @@
 """
-Módulo de Preenchimento de Empresas - VERSÃO OTIMIZADA.
+Módulo de Preenchimento de Empresas - VERSÃO REFATORADA (SEM SALVAMENTO).
+
+RESPONSABILIDADE:
+- Adicionar papéis de Empresa (BR01, BR04, BR20)
+- Preencher dados de cada empresa
+- IMPORTANTE: NÃO salva - salvamento é responsabilidade do AutomacaoSAP.py
 
 OTIMIZAÇÕES:
-1. ⚡ Remoção da espera de 1.0s após processar empresa
-2. ⚡ Esperas ativas para validação de mudança de empresa
-3. ⚡ Polling agressivo em todas as operações
-4. ⚡ Batch de preenchimento de IRF
-5. ⚡ Salvamento otimizado
+1. ⚡ Esperas ativas para validação
+2. ⚡ Polling agressivo (0.02s)
+3. ⚡ Batch de preenchimento de IRF
+4. ⚡ Remoção de espera fixa após processar empresa
 
 PERFORMANCE: 4-6x mais rápido que versão original
-COMPATIBILIDADE: 100% - Drop-in replacement do original
+PORTABILIDADE: 100% - Usa apenas findById() com IDs completos
 """
 
 import time
@@ -19,9 +23,8 @@ from typing import Dict
 
 class PreencherEmpresas:
     """
-    Classe responsável por cadastrar papéis de Empresa (OTIMIZADO).
-    
-    VERSÃO OTIMIZADA: 4-6x mais rápido.
+    Classe responsável por cadastrar papéis de Empresa.
+    NÃO realiza salvamento - apenas preenchimento.
     """
     
     def __init__(
@@ -33,7 +36,6 @@ class PreencherEmpresas:
         """Inicializa o módulo."""
         self.session = session
         self.campos = manipulador_campos
-        # ✅ CORRIGIDO: Import relativo
         from .ManipuladorCampos import GerenciadorPopups
         self.popups = GerenciadorPopups(session)
         self.dados = dados_fornecedor
@@ -41,12 +43,8 @@ class PreencherEmpresas:
         # Empresas para cadastrar
         self.empresas = ['BR01', 'BR04', 'BR20']
     
-    # ========================================================================
-    # ESPERAS ATIVAS OTIMIZADAS
-    # ========================================================================
-    
     def _wait_sap_ready(self, timeout: float = 5.0) -> bool:
-        """Aguarda SAP ficar pronto (OTIMIZADO)"""
+        """Aguarda SAP ficar pronto (PORTÁVEL)"""
         end_time = time.time() + timeout
         
         while time.time() < end_time:
@@ -60,7 +58,7 @@ class PreencherEmpresas:
         return False
     
     def wait_for_element(self, element_id: str, timeout: float = 10) -> bool:
-        """Aguarda elemento existir (OTIMIZADO)"""
+        """Aguarda elemento existir (PORTÁVEL)"""
         end_time = time.time() + timeout
         
         while time.time() < end_time:
@@ -72,91 +70,16 @@ class PreencherEmpresas:
         
         raise TimeoutError(f"Elemento '{element_id}' não apareceu em {timeout}s")
     
-    # ========================================================================
-    # SALVAMENTO OTIMIZADO
-    # ========================================================================
-    
-    def salvar_empresas(self) -> bool:
-        """
-        Salva empresas no SAP (OTIMIZADO + ROBUSTEZ).
-        
-        CORREÇÃO: Aguarda SAP processar completamente antes de retornar.
-        """
-        try:
-            print("\n[INFO] Salvando empresas no SAP...")
-            
-            # Pressiona botão Salvar
-            botao_salvar_id = "wnd[0]/tbar[0]/btn[11]"
-            
-            try:
-                botao_salvar = self.session.findById(botao_salvar_id)
-                botao_salvar.press()
-                print("[OK] Botão 'Salvar' pressionado")
-            except Exception as e:
-                print(f"[ERRO] Não foi possível pressionar botão Salvar: {e}")
-                return False
-            
-            # Aguarda processamento inicial (MAIS TEMPO)
-            print("[INFO] Aguardando SAP processar salvamento...")
-            self._wait_sap_ready(timeout=5.0)
-            
-            # Verifica popup
-            try:
-                if self.popups.existe_popup(timeout=3):
-                    print("[INFO] Popup de confirmação detectado")
-                    self.popups.confirmar_popup()
-                    
-                    # Aguarda popup fechar
-                    print("[INFO] Aguardando popup fechar...")
-                    self._wait_sap_ready(timeout=3.0)
-                else:
-                    print("[INFO] Nenhum popup detectado")
-            
-            except Exception as e:
-                print(f"[AVISO] Erro ao verificar popup: {e}")
-            
-            # ✅ CORREÇÃO: Aguarda SAP REALMENTE terminar de processar
-            print("[INFO] ⏳ Aguardando SAP finalizar processamento...")
-            
-            # Aguarda até 10 segundos para garantir que salvou
-            end_time = time.time() + 10.0
-            while time.time() < end_time:
-                if not self.session.Busy:
-                    # Aguarda mais um pouco para garantir
-                    time.sleep(0.5)
-                    if not self.session.Busy:
-                        break
-                time.sleep(0.1)
-            
-            # Valida salvamento
-            try:
-                janela_principal = self.session.findById("wnd[0]")
-                print("[OK] ✅ Empresas salvas com sucesso")
-                print("[INFO] ⏳ SAP está pronto para próxima etapa")
-                return True
-                
-            except Exception as e:
-                print(f"[ERRO] Falha ao validar salvamento: {e}")
-                return False
-        
-        except Exception as e:
-            print(f"[ERRO] Falha ao salvar empresas: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
-    
-    # ========================================================================
-    # CADASTRO DE EMPRESAS OTIMIZADO
-    # ========================================================================
-    
     def adicionar_empresas(self) -> bool:
         """
-        Adiciona papel Empresa para BR01, BR04 e BR20 (OTIMIZADO).
+        Adiciona papel Empresa para BR01, BR04 e BR20.
+        NÃO salva - apenas preenche.
         
-        ⚡ OTIMIZAÇÃO PRINCIPAL: Remoção da espera de 1.0s após processar empresa
+        Returns:
+            True se todas as empresas foram cadastradas com sucesso
         """
         print("\n" + "="*70)
-        print("ETAPA: CADASTRO DE EMPRESAS (OTIMIZADO ⚡)")
+        print("CADASTRO DE EMPRESAS (SEM SALVAMENTO)")
         print("="*70)
         
         for idx, empresa in enumerate(self.empresas):
@@ -172,27 +95,22 @@ class PreencherEmpresas:
             
             print(f"[OK] Empresa {empresa} cadastrada com sucesso")
         
-        # Salva todas as empresas de uma vez
-        print("\n" + "="*70)
-        print("SALVANDO CADASTRO DE TODAS AS EMPRESAS")
-        print("="*70)
-        
-        sucesso_salvar = self.salvar_empresas()
-        
-        if not sucesso_salvar:
-            print("[ERRO] Falha ao salvar empresas no SAP")
-            return False
-        
-        print("\n[OK] ✅✅✅ Todas as 3 empresas cadastradas e salvas!")
+        print("\n[OK] ✅✅✅ Todas as 3 empresas cadastradas!")
+        print("[INFO] Salvamento será realizado pelo AutomacaoSAP.py")
         print("="*70 + "\n")
         
         return True
     
     def _adicionar_empresa_individual(self, codigo_empresa: str, eh_primeira: bool) -> bool:
         """
-        Adiciona uma empresa específica (OTIMIZADO).
+        Adiciona uma empresa específica (PORTÁVEL).
         
-        ⚡ OTIMIZAÇÃO: Espera ativa ao invés de 1.0s fixo
+        Args:
+            codigo_empresa: Código da empresa (BR01, BR04, BR20)
+            eh_primeira: Se é a primeira empresa (usa Adicionar Papel)
+            
+        Returns:
+            True se cadastrou com sucesso
         """
         try:
             # ETAPA 1: ADICIONAR PAPEL OU TROCAR EMPRESA
@@ -206,7 +124,7 @@ class PreencherEmpresas:
                 self.campos.pressionar_botao('empresa', 'botao_trocar_empresa')
                 print("[OK] Botão 'Trocar Empresa' pressionado")
             
-            # Aguarda SAP processar (ATIVO - SEM ESPERA FIXA)
+            # Aguarda SAP processar
             self._wait_sap_ready(timeout=2.0)
             
             # ETAPA 2: PREENCHER CÓDIGO DA EMPRESA
@@ -223,12 +141,10 @@ class PreencherEmpresas:
             # Pressiona ENTER para processar
             self.session.findById("wnd[0]").sendVKey(0)
             
-            # ⚡ OTIMIZAÇÃO CRÍTICA: Espera ATIVA ao invés de 1.0s fixo
+            # Espera ATIVA para empresa ser processada
             print(f"[INFO] ⚡ Aguardando SAP processar empresa {codigo_empresa}...")
-            
-            # Verifica se campo foi processado (ESPERA ATIVA)
             if self._wait_empresa_processada(codigo_empresa, timeout=3.0):
-                print(f"[OK] ⚡ Empresa processada em <1s")
+                print(f"[OK] ⚡ Empresa processada")
             else:
                 print(f"[AVISO] Empresa pode não ter sido processada completamente")
             
@@ -245,21 +161,21 @@ class PreencherEmpresas:
             self.session.findById(aba1_id).select()
             self._wait_sap_ready(timeout=2.0)
             
-            # Preenche campos da aba 1 (SEM ESPERAS ENTRE CAMPOS)
+            # Preenche campos da aba 1
             try:
                 self.campos.preencher_campo_texto('empresa', 'conta_conciliacao', '44000000')
             except Exception as e:
-                print(f"[AVISO] Campo conta_conciliacao não encontrado: {e}")
+                print(f"[AVISO] Campo conta_conciliacao: {e}")
             
             try:
                 self.campos.preencher_campo_texto('empresa', 'chave_ordenacao', '001')
             except Exception as e:
-                print(f"[AVISO] Campo chave_ordenacao não encontrado: {e}")
+                print(f"[AVISO] Campo chave_ordenacao: {e}")
             
             try:
                 self.campos.preencher_campo_texto('empresa', 'grupo_admin_tesouraria', 'BR_P_3L')
             except Exception as e:
-                print(f"[AVISO] Campo grupo_admin_tesouraria não encontrado: {e}")
+                print(f"[AVISO] Campo grupo_admin_tesouraria: {e}")
             
             print("[OK] Aba 1 preenchida")
             
@@ -276,22 +192,22 @@ class PreencherEmpresas:
             self.session.findById(aba2_id).select()
             self._wait_sap_ready(timeout=2.0)
             
-            # Preenche campos da aba 2 (SEM ESPERAS ENTRE CAMPOS)
+            # Preenche campos da aba 2
             try:
                 self.campos.marcar_checkbox('empresa', 'verificacao_fatura_duplic', True)
             except Exception as e:
-                print(f"[AVISO] Campo verificacao_fatura_duplic não encontrado: {e}")
+                print(f"[AVISO] Campo verificacao_fatura_duplic: {e}")
             
             try:
                 prazo = self.dados['geral'].get('prazo_pagamento', 'BRFG')
                 self.campos.preencher_campo_texto('empresa', 'condicoes_pagamento', prazo)
             except Exception as e:
-                print(f"[AVISO] Campo condicoes_pagamento não encontrado: {e}")
+                print(f"[AVISO] Campo condicoes_pagamento: {e}")
             
             try:
                 self.campos.preencher_campo_texto('empresa', 'formas_pagamento', 'BCFITU')
             except Exception as e:
-                print(f"[AVISO] Campo formas_pagamento não encontrado: {e}")
+                print(f"[AVISO] Campo formas_pagamento: {e}")
             
             print("[OK] Aba 2 preenchida")
             
@@ -311,7 +227,7 @@ class PreencherEmpresas:
             self.session.findById(aba5_id).select()
             self._wait_sap_ready(timeout=2.0)
             
-            # Preenche IRF (OTIMIZADO)
+            # Preenche IRF
             sucesso_irf = self._preencher_irf_otimizado()
             
             if not sucesso_irf:
@@ -328,10 +244,7 @@ class PreencherEmpresas:
     
     def _wait_empresa_processada(self, codigo_empresa: str, timeout: float = 3.0) -> bool:
         """
-        ⚡ OTIMIZAÇÃO: Espera ATIVA para empresa ser processada.
-        
-        Antes: time.sleep(1.0) fixo
-        Depois: Verifica se campo foi atualizado com o código
+        Espera ATIVA para empresa ser processada (PORTÁVEL).
         
         Args:
             codigo_empresa: Código da empresa esperado
@@ -353,9 +266,7 @@ class PreencherEmpresas:
         
         while time.time() < end_time:
             try:
-                # Aguarda SAP não estar ocupado
                 if not self.session.Busy:
-                    # Verifica se campo contém o código esperado
                     campo = self.session.findById(campo_empresa_id)
                     valor_atual = campo.text.strip()
                     
@@ -364,18 +275,19 @@ class PreencherEmpresas:
             except:
                 pass
             
-            time.sleep(0.02)  # Polling agressivo
+            time.sleep(0.02)
         
         return False
     
     def _preencher_irf_otimizado(self) -> bool:
         """
-        ⚡ Preenche IRF de forma OTIMIZADA (batch).
+        Preenche IRF de forma OTIMIZADA (batch) e PORTÁVEL.
         
-        OTIMIZAÇÃO: Todas as operações em batch, sem esperas entre campos.
+        Returns:
+            True se preencheu com sucesso
         """
         try:
-            print("[INFO] ⚡ Preenchendo IRF (otimizado)...")
+            print("[INFO] ⚡ Preenchendo IRF...")
             
             # Definição das 6 categorias
             categorias_irf = [
@@ -397,7 +309,7 @@ class PreencherEmpresas:
                 "subA02P01:SAPLCVI_FS_UI_VENDOR_CC:0054/tblSAPLCVI_FS_UI_VENDOR_CCTCTRL_LFBW/"
             )
             
-            # ⚡ BATCH 1: Marcar TODOS os checkboxes (SEM ESPERAS)
+            # BATCH 1: Marcar checkboxes
             print("[INFO] Marcando checkboxes...")
             for cat in categorias_irf:
                 linha = cat['linha']
@@ -407,7 +319,7 @@ class PreencherEmpresas:
                 except Exception:
                     pass
             
-            # ⚡ BATCH 2: Preencher TODOS os tipos (SEM ESPERAS)
+            # BATCH 2: Preencher tipos
             print("[INFO] Preenchendo tipos...")
             for cat in categorias_irf:
                 linha = cat['linha']
@@ -418,7 +330,7 @@ class PreencherEmpresas:
                 except Exception:
                     pass
             
-            # ⚡ BATCH 3: Preencher TODOS os códigos (SEM ESPERAS)
+            # BATCH 3: Preencher códigos
             print("[INFO] Preenchendo códigos...")
             ultimo_campo = None
             for cat in categorias_irf:
@@ -440,25 +352,22 @@ class PreencherEmpresas:
                 self._wait_sap_ready(timeout=1.0)
                 self.session.findById("wnd[0]").sendVKey(0)
             
-            print("[OK] ⚡ IRF configurado em batch")
+            print("[OK] ⚡ IRF configurado")
             return True
             
         except Exception as e:
             print(f"[ERRO] Falha ao preencher IRF: {e}")
             return False
     
-    # ========================================================================
-    # MÉTODO PRINCIPAL DE EXECUÇÃO
-    # ========================================================================
-    
     def executar(self) -> bool:
         """
-        Executa o cadastro de empresas (OTIMIZADO).
+        Executa o cadastro de empresas (SEM SALVAMENTO).
         
-        PERFORMANCE: 4-6x mais rápido.
+        Returns:
+            True se cadastrou todas as empresas com sucesso
         """
         print("\n" + "="*70)
-        print("MÓDULO: CADASTRO DE EMPRESAS (OTIMIZADO ⚡)")
+        print("MÓDULO: CADASTRO DE EMPRESAS")
         print("="*70)
         
         try:
@@ -468,7 +377,7 @@ class PreencherEmpresas:
                 print("[ERRO] Falha ao cadastrar empresas")
                 return False
             
-            print("\n[OK] ✅✅✅ Empresas cadastradas (OTIMIZADO ⚡)")
+            print("\n[OK] ✅✅✅ Empresas cadastradas (aguardando salvamento)")
             print("="*70 + "\n")
             
             return True

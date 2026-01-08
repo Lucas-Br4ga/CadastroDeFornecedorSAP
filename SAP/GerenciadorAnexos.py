@@ -1,5 +1,9 @@
 """
-Módulo de Gerenciamento de Anexos - VERSÃO BLINDADA.
+Módulo de Gerenciamento de Anexos - VERSÃO REFATORADA (SEM SALVAMENTO).
+
+RESPONSABILIDADE:
+- Anexar documentos no SAP
+- IMPORTANTE: NÃO salva - salvamento é responsabilidade do AutomacaoSAP.py
 
 CORREÇÕES APLICADAS:
 1. ✅ Validação de arquivos antes de anexar
@@ -8,10 +12,9 @@ CORREÇÕES APLICADAS:
 4. ✅ Recuperação de estado em erros
 5. ✅ Mensagens detalhadas
 6. ✅ Retry em operações críticas
-7. ✅ Salvamento super robusto
 
 PERFORMANCE: 2-3x mais rápido
-ROBUSTEZ: 100% - À prova de falhas
+PORTABILIDADE: 100% - Usa apenas findById() com IDs completos
 """
 
 import time
@@ -22,17 +25,22 @@ from typing import Dict
 
 
 class GerenciadorAnexosSAP:
-    """Classe para anexar documentos (BLINDADO)"""
+    """
+    Classe para anexar documentos no SAP.
+    NÃO realiza salvamento - apenas anexação.
+    """
     
     def __init__(self, session, manipulador_campos):
+        """Inicializa o gerenciador."""
         self.session = session
         self.campos = manipulador_campos
         from .ManipuladorCampos import GerenciadorPopups
         self.popups = GerenciadorPopups(session)
     
     def _wait_sap_ready(self, timeout: float = 5.0) -> bool:
-        """Aguarda SAP ficar pronto"""
+        """Aguarda SAP ficar pronto (PORTÁVEL)"""
         end_time = time.time() + timeout
+        
         while time.time() < end_time:
             try:
                 if not self.session.Busy:
@@ -40,10 +48,11 @@ class GerenciadorAnexosSAP:
             except:
                 pass
             time.sleep(0.02)
+        
         return False
     
     def _limpar_estado_popups(self):
-        """Limpa popups abertos (recuperação de erro)"""
+        """Limpa popups abertos (recuperação de erro) - PORTÁVEL"""
         try:
             for i in range(5, 0, -1):  # wnd[5] até wnd[1]
                 try:
@@ -54,62 +63,13 @@ class GerenciadorAnexosSAP:
         except:
             pass
     
-    def salvar_anexos(self) -> bool:
-        """Salva anexos (SUPER ROBUSTO)"""
-        try:
-            print("\n[INFO] Salvando anexos no SAP...")
-            
-            # Pressiona Salvar
-            botao_salvar_id = "wnd[0]/tbar[0]/btn[11]"
-            try:
-                botao = self.session.findById(botao_salvar_id)
-                botao.press()
-                print("[OK] Botão 'Salvar' pressionado")
-            except Exception as e:
-                print(f"[ERRO] Não foi possível pressionar Salvar: {e}")
-                return False
-            
-            # Aguarda processamento (GENEROSO)
-            print("[INFO] ⏳ Aguardando SAP processar salvamento (até 8s)...")
-            self._wait_sap_ready(timeout=8.0)
-            
-            # Trata popup
-            try:
-                if self.popups.existe_popup(timeout=3):
-                    print("[INFO] Popup detectado, confirmando...")
-                    self.popups.confirmar_popup()
-                    self._wait_sap_ready(timeout=3.0)
-            except Exception as e:
-                print(f"[AVISO] Erro ao tratar popup: {e}")
-            
-            # CRÍTICO: Aguarda SAP finalizar (até 12s total)
-            print("[INFO] ⏳ Garantindo conclusão do salvamento...")
-            end_time = time.time() + 12.0
-            while time.time() < end_time:
-                if not self.session.Busy:
-                    time.sleep(0.5)
-                    if not self.session.Busy:
-                        break
-                time.sleep(0.1)
-            
-            # Validação final
-            try:
-                self.session.findById("wnd[0]")
-                print("[OK] ✅ Anexos salvos com sucesso")
-                print("[INFO] ✅ SAP pronto para finalizar")
-                return True
-            except Exception as e:
-                print(f"[ERRO] Validação falhou: {e}")
-                return False
-        
-        except Exception as e:
-            print(f"[ERRO] Falha ao salvar: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
-    
     def _carregar_lista_anexos(self) -> Dict[str, str]:
-        """Carrega lista de anexos"""
+        """
+        Carrega lista de anexos do JSON (PORTÁVEL).
+        
+        Returns:
+            Dicionário {nome: caminho} dos anexos
+        """
         try:
             import sys
             root_dir = Path(__file__).resolve().parents[1]
@@ -140,13 +100,19 @@ class GerenciadorAnexosSAP:
                     todos_anexos[nome] = caminho
             
             return todos_anexos
+            
         except Exception as e:
             raise Exception(f"Erro ao carregar anexos: {e}")
     
     def adicionar_anexos(self) -> bool:
-        """Adiciona anexos (BLINDADO)"""
+        """
+        Adiciona anexos no SAP (SEM SALVAMENTO).
+        
+        Returns:
+            True se todos anexos foram adicionados com sucesso
+        """
         print("\n" + "="*70)
-        print("ANEXAÇÃO DE DOCUMENTOS (BLINDADO 🛡️)")
+        print("ANEXAÇÃO DE DOCUMENTOS (SEM SALVAMENTO)")
         print("="*70)
         
         try:
@@ -200,7 +166,7 @@ class GerenciadorAnexosSAP:
                 print(f"\n[AVISO] {falha} anexo(s) falharam")
                 return False
             
-            print("\n[OK] ✅✅✅ Todos anexos cadastrados")
+            print("\n[OK] ✅✅✅ Todos anexos cadastrados (aguardando salvamento)")
             print("="*70 + "\n")
             return True
             
@@ -211,7 +177,16 @@ class GerenciadorAnexosSAP:
             return False
     
     def _anexar_arquivo_individual(self, nome: str, caminho: str) -> bool:
-        """Anexa arquivo individual (BLINDADO)"""
+        """
+        Anexa arquivo individual (PORTÁVEL).
+        
+        Args:
+            nome: Nome do anexo
+            caminho: Caminho completo do arquivo
+            
+        Returns:
+            True se anexou com sucesso
+        """
         try:
             # VALIDAÇÃO DETALHADA
             caminho_completo = Path(caminho)
@@ -221,7 +196,6 @@ class GerenciadorAnexosSAP:
                 print(f"      Nome: {nome}")
                 print(f"      Caminho informado: {caminho}")
                 print(f"      Caminho absoluto: {caminho_completo.absolute()}")
-                print(f"      Existe? {caminho_completo.exists()}")
                 return False
             
             # Normaliza caminhos (Windows-safe)
@@ -323,9 +297,14 @@ class GerenciadorAnexosSAP:
             return False
     
     def executar(self) -> bool:
-        """Executa anexação (BLINDADO)"""
+        """
+        Executa anexação (SEM SALVAMENTO).
+        
+        Returns:
+            True se anexou com sucesso
+        """
         print("\n" + "="*70)
-        print("MÓDULO: ANEXOS (BLINDADO 🛡️)")
+        print("MÓDULO: ANEXOS")
         print("="*70)
         
         try:
@@ -333,15 +312,7 @@ class GerenciadorAnexosSAP:
                 print("[AVISO] Falha ao anexar")
                 return False
             
-            print("\n" + "="*70)
-            print("SALVANDO ANEXOS")
-            print("="*70)
-            
-            if not self.salvar_anexos():
-                print("[ERRO] Falha ao salvar")
-                return False
-            
-            print("\n[OK] ✅✅✅ Anexos COMPLETO (BLINDADO 🛡️)")
+            print("\n[OK] ✅✅✅ Anexos COMPLETO (aguardando salvamento)")
             print("="*70 + "\n")
             return True
             

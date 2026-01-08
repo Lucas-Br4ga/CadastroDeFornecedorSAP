@@ -1,5 +1,10 @@
 """
-Módulo de Preenchimento de Compras - VERSÃO BLINDADA.
+Módulo de Preenchimento de Compras - VERSÃO REFATORADA (SEM SALVAMENTO).
+
+RESPONSABILIDADE:
+- Adicionar papel FLVN01 (Compras)
+- Preencher dados de compras
+- IMPORTANTE: NÃO salva - salvamento é responsabilidade do AutomacaoSAP.py
 
 CORREÇÕES APLICADAS:
 1. ✅ Validação de papel selecionado
@@ -8,10 +13,9 @@ CORREÇÕES APLICADAS:
 4. ✅ Checkboxes obrigatórios verificados
 5. ✅ Retry em operações críticas
 6. ✅ Logging detalhado
-7. ✅ Salvamento super robusto
 
 PERFORMANCE: 3-4x mais rápido
-ROBUSTEZ: 100% - À prova de falhas
+PORTABILIDADE: 100% - Usa apenas findById() com IDs completos
 """
 
 import time
@@ -20,9 +24,13 @@ from typing import Dict
 
 
 class PreencherCompras:
-    """Classe para cadastrar papel de Compras (BLINDADO)"""
+    """
+    Classe para cadastrar papel de Compras (FLVN01).
+    NÃO realiza salvamento - apenas preenchimento.
+    """
     
     def __init__(self, session, manipulador_campos, dados_fornecedor: Dict):
+        """Inicializa o módulo."""
         self.session = session
         self.campos = manipulador_campos
         from .ManipuladorCampos import GerenciadorPopups
@@ -30,8 +38,9 @@ class PreencherCompras:
         self.dados = dados_fornecedor
     
     def _wait_sap_ready(self, timeout: float = 5.0) -> bool:
-        """Aguarda SAP ficar pronto"""
+        """Aguarda SAP ficar pronto (PORTÁVEL)"""
         end_time = time.time() + timeout
+        
         while time.time() < end_time:
             try:
                 if not self.session.Busy:
@@ -39,10 +48,11 @@ class PreencherCompras:
             except:
                 pass
             time.sleep(0.02)
+        
         return False
     
     def _validar_campo_preenchido(self, element_id: str, valor_esperado: str) -> bool:
-        """Valida se campo foi realmente preenchido"""
+        """Valida se campo foi realmente preenchido (PORTÁVEL)"""
         try:
             campo = self.session.findById(element_id)
             valor_atual = str(campo.text).strip()
@@ -51,7 +61,7 @@ class PreencherCompras:
             return False
     
     def _executar_com_retry(self, funcao, max_tentativas: int = 3, nome_operacao: str = ""):
-        """Executa função com retry automático"""
+        """Executa função com retry automático (PORTÁVEL)"""
         for tentativa in range(max_tentativas):
             try:
                 return funcao()
@@ -62,64 +72,16 @@ class PreencherCompras:
                 print(f"[RETRY] {nome_operacao} - Tentativa {tentativa + 1}/{max_tentativas}")
                 time.sleep(1.0)
     
-    def salvar_compras(self) -> bool:
-        """Salva papel de Compras (SUPER ROBUSTO)"""
-        try:
-            print("\n[INFO] Salvando papel de Compras no SAP...")
-            
-            # Pressiona Salvar
-            botao_salvar_id = "wnd[0]/tbar[0]/btn[11]"
-            try:
-                botao = self.session.findById(botao_salvar_id)
-                botao.press()
-                print("[OK] Botão 'Salvar' pressionado")
-            except Exception as e:
-                print(f"[ERRO] Não foi possível pressionar Salvar: {e}")
-                return False
-            
-            # Aguarda processamento (GENEROSO)
-            print("[INFO] ⏳ Aguardando SAP processar salvamento (até 8s)...")
-            self._wait_sap_ready(timeout=8.0)
-            
-            # Trata popup
-            try:
-                if self.popups.existe_popup(timeout=3):
-                    print("[INFO] Popup detectado, confirmando...")
-                    self.popups.confirmar_popup()
-                    self._wait_sap_ready(timeout=3.0)
-            except Exception as e:
-                print(f"[AVISO] Erro ao tratar popup: {e}")
-            
-            # CRÍTICO: Aguarda SAP finalizar (até 12s total)
-            print("[INFO] ⏳ Garantindo conclusão do salvamento...")
-            end_time = time.time() + 12.0
-            while time.time() < end_time:
-                if not self.session.Busy:
-                    time.sleep(0.5)
-                    if not self.session.Busy:
-                        break
-                time.sleep(0.1)
-            
-            # Validação final
-            try:
-                self.session.findById("wnd[0]")
-                print("[OK] ✅ Compras salva com sucesso")
-                print("[INFO] ✅ SAP pronto para próxima etapa")
-                return True
-            except Exception as e:
-                print(f"[ERRO] Validação falhou: {e}")
-                return False
-        
-        except Exception as e:
-            print(f"[ERRO] Falha ao salvar: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
-    
     def adicionar_papel_compras(self) -> bool:
-        """Adiciona papel FLVN01 (BLINDADO)"""
+        """
+        Adiciona papel FLVN01 (Compras).
+        NÃO salva - apenas preenche.
+        
+        Returns:
+            True se cadastrou com sucesso
+        """
         print("\n" + "="*70)
-        print("CADASTRANDO COMPRAS (FLVN01) - BLINDADO 🛡️")
+        print("CADASTRANDO COMPRAS (FLVN01) - SEM SALVAMENTO")
         print("="*70)
         
         try:
@@ -281,7 +243,7 @@ class PreencherCompras:
             except:
                 pass
             
-            print("\n[OK] ✅✅✅ Compras cadastrado (BLINDADO 🛡️)")
+            print("\n[OK] ✅✅✅ Compras cadastrado (aguardando salvamento)")
             print("="*70 + "\n")
             return True
             
@@ -292,23 +254,22 @@ class PreencherCompras:
             return False
     
     def executar(self) -> bool:
-        """Executa cadastro (BLINDADO)"""
+        """
+        Executa cadastro de Compras (SEM SALVAMENTO).
+        
+        Returns:
+            True se cadastrou com sucesso
+        """
         print("\n" + "="*70)
-        print("MÓDULO: COMPRAS (BLINDADO 🛡️)")
+        print("MÓDULO: COMPRAS")
         print("="*70)
         
         try:
             if not self.adicionar_papel_compras():
+                print("[ERRO] Falha ao cadastrar Compras")
                 return False
             
-            print("\n" + "="*70)
-            print("SALVANDO COMPRAS")
-            print("="*70)
-            
-            if not self.salvar_compras():
-                return False
-            
-            print("\n[OK] ✅✅✅ Compras COMPLETO (BLINDADO 🛡️)")
+            print("\n[OK] ✅✅✅ Compras COMPLETO (aguardando salvamento)")
             print("="*70 + "\n")
             return True
             
