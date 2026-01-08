@@ -16,10 +16,10 @@
         "cep": "35600-350"
     },
     "contato": {
-        "celular": "(37) 3261-7791 / (31) 99837-9870",
+        "celular": "(37) 3261-7791",
         "email_comercial": "comercial1.service@isocald.com.br",
         "email_fiscal": "iscal.service@isocald.com.br",
-        "celular_secundario": ""
+        "celular_secundario": "(31) 99837-9870"
     },
     "bancario": {
         "banco": "",
@@ -28,7 +28,7 @@
         "codigo_banco": "033"
     },
     "geral": {
-        "prazo_pagamento": "BRFM",
+        "prazo_pagamento": "BRFG",
         "modalidade_frete": "CIF"
     }
 }
