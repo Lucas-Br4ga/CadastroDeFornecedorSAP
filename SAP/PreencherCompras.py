@@ -1,21 +1,19 @@
+# -*- coding: utf-8 -*-
 """
-Módulo de Preenchimento de Compras - VERSÃO REFATORADA (SEM SALVAMENTO).
+Módulo de Preenchimento de Compras - VERSÃO PORTÁVEL.
 
 RESPONSABILIDADE:
 - Adicionar papel FLVN01 (Compras)
-- Preencher dados de compras
+- Preencher organização 0009 com espera robusta
+- Preencher todos os campos de compras
 - IMPORTANTE: NÃO salva - salvamento é responsabilidade do AutomacaoSAP.py
 
-CORREÇÕES APLICADAS:
-1. ✅ Validação de papel selecionado
-2. ✅ Timeout adequado na organização (5s)
-3. ✅ Validação de campos após preenchimento
-4. ✅ Checkboxes obrigatórios verificados
-5. ✅ Retry em operações críticas
-6. ✅ Logging detalhado
-
-PERFORMANCE: 3-4x mais rápido
-PORTABILIDADE: 100% - Usa apenas findById() com IDs completos
+PORTABILIDADE:
+- Esperas ativas após operações críticas
+- Pausas estratégicas após ENTER
+- Validação de elementos
+- IDs completos SAP GUI
+- Tratamento robusto de erros
 """
 
 import time
@@ -23,82 +21,171 @@ import pythoncom
 from typing import Dict
 
 
+class PreencherComprasError(Exception):
+    """Erro específico do módulo de compras"""
+    pass
+
+
 class PreencherCompras:
     """
-    Classe para cadastrar papel de Compras (FLVN01).
+    Classe para cadastrar papel de Compras (FLVN01) - PORTÁVEL.
     NÃO realiza salvamento - apenas preenchimento.
     """
     
     def __init__(self, session, manipulador_campos, dados_fornecedor: Dict):
-        """Inicializa o módulo."""
+        """
+        Inicializa o módulo.
+        
+        Args:
+            session: Sessão SAP ativa
+            manipulador_campos: Manipulador de campos
+            dados_fornecedor: Dados do fornecedor
+        """
         self.session = session
         self.campos = manipulador_campos
         from .ManipuladorCampos import GerenciadorPopups
         self.popups = GerenciadorPopups(session)
         self.dados = dados_fornecedor
     
-    def _wait_sap_ready(self, timeout: float = 5.0) -> bool:
-        """Aguarda SAP ficar pronto (PORTÁVEL)"""
+    # ========================================================================
+    # ESPERAS ATIVAS (PORTÁVEIS)
+    # ========================================================================
+    
+    def _wait_sap_ready(self, timeout: float = 10.0) -> bool:
+        """
+        Aguarda SAP ficar pronto (não ocupado).
+        
+        PORTÁVEL: Verifica session.Busy ao invés de espera fixa.
+        
+        Args:
+            timeout: Tempo máximo de espera em segundos
+            
+        Returns:
+            True se SAP ficou pronto, False se timeout
+        """
         end_time = time.time() + timeout
         
         while time.time() < end_time:
             try:
                 if not self.session.Busy:
                     return True
-            except:
+            except Exception:
                 pass
-            time.sleep(0.02)
+            time.sleep(0.02)  # Polling agressivo
         
         return False
     
+    def _wait_for_element(
+        self, 
+        element_id: str, 
+        timeout: float = 10.0,
+        element_name: str = ""
+    ) -> bool:
+        """
+        Aguarda elemento existir (PORTÁVEL).
+        
+        Args:
+            element_id: ID completo do elemento
+            timeout: Tempo máximo de espera
+            element_name: Nome do elemento (para logs)
+            
+        Returns:
+            True se elemento apareceu, False se timeout
+        """
+        end_time = time.time() + timeout
+        
+        while time.time() < end_time:
+            try:
+                self.session.findById(element_id)
+                return True
+            except pythoncom.com_error:
+                time.sleep(0.05)
+        
+        print(f"[ERRO] Elemento '{element_name}' não apareceu após {timeout}s")
+        print(f"       ID: {element_id}")
+        return False
+    
     def _validar_campo_preenchido(self, element_id: str, valor_esperado: str) -> bool:
-        """Valida se campo foi realmente preenchido (PORTÁVEL)"""
+        """
+        Valida se campo foi preenchido corretamente (PORTÁVEL).
+        
+        Args:
+            element_id: ID do elemento
+            valor_esperado: Valor que deveria estar no campo
+            
+        Returns:
+            True se campo está com valor correto
+        """
         try:
             campo = self.session.findById(element_id)
             valor_atual = str(campo.text).strip()
             return valor_esperado in valor_atual or valor_atual == valor_esperado
-        except:
+        except Exception:
             return False
     
-    def _executar_com_retry(self, funcao, max_tentativas: int = 3, nome_operacao: str = ""):
-        """Executa função com retry automático (PORTÁVEL)"""
-        for tentativa in range(max_tentativas):
-            try:
-                return funcao()
-            except Exception as e:
-                if tentativa == max_tentativas - 1:
-                    print(f"[ERRO] {nome_operacao} falhou após {max_tentativas} tentativas: {e}")
-                    raise
-                print(f"[RETRY] {nome_operacao} - Tentativa {tentativa + 1}/{max_tentativas}")
-                time.sleep(1.0)
+    # ========================================================================
+    # ADICIONAR PAPEL FLVN01 (PORTÁVEL)
+    # ========================================================================
     
-    def adicionar_papel_compras(self) -> bool:
+    def _adicionar_papel(self) -> bool:
         """
-        Adiciona papel FLVN01 (Compras).
-        NÃO salva - apenas preenche.
+        Pressiona botão "Adicionar papel" (PORTÁVEL).
         
         Returns:
-            True se cadastrou com sucesso
+            True se pressionou com sucesso
         """
-        print("\n" + "="*70)
-        print("CADASTRANDO COMPRAS (FLVN01) - SEM SALVAMENTO")
-        print("="*70)
+        print("[1/6] Adicionando papel...")
         
         try:
-            # PASSO 1: Adicionar papel
-            print("\n[1/5] Adicionando papel...")
+            botao_id = "wnd[0]/tbar[1]/btn[26]"
             
-            def adicionar_papel():
-                botao = self.session.findById("wnd[0]/tbar[1]/btn[26]")
-                botao.press()
-                self._wait_sap_ready(timeout=3.0)
+            # VALIDAÇÃO: Verificar se botão existe
+            if not self._wait_for_element(
+                botao_id, 
+                timeout=5.0, 
+                element_name="Botão adicionar papel"
+            ):
+                raise PreencherComprasError(
+                    "Botão 'Adicionar papel' não encontrado"
+                )
             
-            self._executar_com_retry(adicionar_papel, 2, "Adicionar papel")
+            # Pressionar botão
+            botao = self.session.findById(botao_id)
+            botao.press()
+            
+            print("[INFO] Botão pressionado")
+            
+            # ESPERA ATIVA: Aguardar processamento
+            if not self._wait_sap_ready(timeout=5.0):
+                print("[AVISO] SAP ainda processando após 5s")
+            
+            # PAUSA EXTRA: Garantir estabilização
+            time.sleep(0.5)
+            
             print("[OK] Papel adicionado")
+            return True
             
-            # PASSO 2: Selecionar FLVN01
-            print("\n[2/5] Selecionando FLVN01...")
-            
+        except PreencherComprasError:
+            raise
+        except Exception as e:
+            raise PreencherComprasError(
+                f"Erro ao adicionar papel: {e}"
+            )
+    
+    # ========================================================================
+    # SELECIONAR FLVN01 (PORTÁVEL)
+    # ========================================================================
+    
+    def _selecionar_flvn01(self) -> bool:
+        """
+        Seleciona FLVN01 no combo de papel (PORTÁVEL).
+        
+        Returns:
+            True se selecionou com sucesso
+        """
+        print("[2/6] Selecionando FLVN01...")
+        
+        try:
             combo_id = (
                 "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/"
                 "subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/"
@@ -107,34 +194,95 @@ class PreencherCompras:
                 "cmbBUS_JOEL_MAIN-PARTNER_ROLE"
             )
             
+            # VALIDAÇÃO: Verificar se combo existe
+            if not self._wait_for_element(
+                combo_id, 
+                timeout=5.0, 
+                element_name="Combo papel"
+            ):
+                raise PreencherComprasError(
+                    "Combo de papel não encontrado"
+                )
+            
+            # Selecionar FLVN01
+            combo = self.session.findById(combo_id)
+            combo.setFocus()
+            combo.key = "FLVN01"
+            
+            # VALIDAÇÃO: Verificar se selecionou
+            if combo.key != "FLVN01":
+                raise PreencherComprasError(
+                    f"FLVN01 não foi selecionado. Valor atual: {combo.key}"
+                )
+            
+            print("[OK] FLVN01 selecionado")
+            
+            # ESPERA ATIVA: Aguardar processamento
+            if not self._wait_sap_ready(timeout=5.0):
+                print("[AVISO] SAP ainda processando após 5s")
+            
+            # PAUSA EXTRA: Garantir estabilização
+            time.sleep(0.5)
+            
+            return True
+            
+        except PreencherComprasError:
+            raise
+        except Exception as e:
+            raise PreencherComprasError(
+                f"Erro ao selecionar FLVN01: {e}"
+            )
+    
+    # ========================================================================
+    # CONFIRMAR POPUP (SE APARECER)
+    # ========================================================================
+    
+    def _confirmar_popup_se_aparecer(self) -> None:
+        """
+        Confirma popup se aparecer após selecionar FLVN01 (PORTÁVEL).
+        """
+        print("[3/6] Verificando popup...")
+        
+        if self.popups.existe_popup(timeout=2):
+            print("[INFO] Popup detectado, confirmando...")
+            
             try:
-                combo = self.session.findById(combo_id)
-                combo.setFocus()
-                combo.key = "FLVN01"
-                
-                # VALIDAÇÃO: Verifica se selecionou
-                if combo.key != "FLVN01":
-                    raise Exception("Papel FLVN01 não foi selecionado corretamente")
-                
-                print("[OK] FLVN01 selecionado e validado")
-                self._wait_sap_ready(timeout=3.0)
-            except Exception as e:
-                print(f"[ERRO] Falha ao selecionar FLVN01: {e}")
-                return False
-            
-            # PASSO 3: Confirmar popup se aparecer
-            if self.popups.existe_popup(timeout=2):
-                print("[INFO] Confirmando popup...")
+                # Tenta botão específico primeiro
+                self.session.findById("wnd[1]/usr/btnBUTTON_1").press()
+                print("[OK] Popup confirmado (botão específico)")
+            except Exception:
+                # Fallback: botão padrão
                 try:
-                    self.session.findById("wnd[1]/usr/btnBUTTON_1").press()
-                    self._wait_sap_ready(timeout=2.0)
-                except:
                     self.popups.confirmar_popup()
-                    self._wait_sap_ready(timeout=2.0)
+                    print("[OK] Popup confirmado (botão padrão)")
+                except Exception as e:
+                    print(f"[AVISO] Erro ao confirmar popup: {e}")
             
-            # PASSO 4: Preencher Organização (VALIDADO)
-            print("\n[3/5] Preenchendo Organização 0009...")
+            # ESPERA ATIVA: Aguardar processamento
+            self._wait_sap_ready(timeout=3.0)
             
+            # PAUSA EXTRA: Garantir fechamento
+            time.sleep(0.3)
+        else:
+            print("[INFO] Nenhum popup detectado")
+    
+    # ========================================================================
+    # PREENCHER ORGANIZAÇÃO 0009 (CRÍTICO - COM ESPERAS ROBUSTAS)
+    # ========================================================================
+    
+    def _preencher_organizacao(self) -> bool:
+        """
+        Preenche organização 0009 com esperas ROBUSTAS (PORTÁVEL).
+        
+        CRÍTICO: Esta é a operação mais importante do módulo.
+        O SAP precisa processar a organização antes de prosseguir.
+        
+        Returns:
+            True se preencheu e processou com sucesso
+        """
+        print("[4/6] Preenchendo Organização 0009...")
+        
+        try:
             org_id = (
                 "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/"
                 "subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/"
@@ -144,33 +292,76 @@ class PreencherCompras:
                 "ctxtGV_PURCHASING_ORG"
             )
             
-            try:
-                campo_org = self.session.findById(org_id)
-                campo_org.text = "0009"
-                campo_org.setFocus()
-                campo_org.caretPosition = 4
+            # VALIDAÇÃO: Verificar se campo existe
+            if not self._wait_for_element(
+                org_id, 
+                timeout=8.0, 
+                element_name="Campo organização"
+            ):
+                raise PreencherComprasError(
+                    "Campo de organização não encontrado após 8s"
+                )
+            
+            # PASSO 1: Preencher campo
+            campo_org = self.session.findById(org_id)
+            campo_org.text = "0009"
+            campo_org.setFocus()
+            campo_org.caretPosition = 4
+            
+            print("[INFO] Campo preenchido: 0009")
+            
+            # PASSO 2: Pressionar ENTER
+            self._wait_sap_ready(timeout=2.0)
+            self.session.findById("wnd[0]").sendVKey(0)
+            
+            print("[INFO] ENTER pressionado, aguardando processamento...")
+            
+            # PASSO 3: ESPERA ATIVA - Aguardar SAP processar
+            if not self._wait_sap_ready(timeout=10.0):
+                print("[AVISO] SAP ainda processando após 10s, continuando...")
+            
+            # PASSO 4: PAUSA ESTRATÉGICA ⏱️
+            # CRÍTICO: O SAP pode marcar Busy=False antes de processar completamente
+            # Esta pausa garante que a organização foi realmente processada
+            print("[INFO] ⏱️ Aguardando estabilização da organização...")
+            time.sleep(1.2)
+            
+            # PASSO 5: VALIDAÇÃO - Verificar se organizou processou
+            if not self._validar_campo_preenchido(org_id, "0009"):
+                print("[AVISO] Organização pode não ter sido processada corretamente")
+                print("[INFO] Aguardando mais tempo...")
+                time.sleep(1.0)
                 
-                # Pressiona ENTER
-                self._wait_sap_ready(timeout=1.0)
-                self.session.findById("wnd[0]").sendVKey(0)
-                
-                # AGUARDA PROCESSAMENTO (GENEROSO)
-                print("[INFO] ⏳ Aguardando processamento da organização (até 5s)...")
-                self._wait_sap_ready(timeout=5.0)
-                
-                # VALIDAÇÃO: Verifica se processou
+                # Segunda tentativa de validação
                 if not self._validar_campo_preenchido(org_id, "0009"):
-                    print("[AVISO] Organização pode não ter sido processada, mas continuando...")
-                else:
-                    print("[OK] Organização 0009 processada e validada")
-                
-            except Exception as e:
-                print(f"[ERRO] Falha na organização: {e}")
-                return False
+                    raise PreencherComprasError(
+                        "Organização não foi processada mesmo após esperas"
+                    )
             
-            # PASSO 5: Preencher campos
-            print("\n[4/5] Preenchendo campos...")
+            print("[OK] ✅ Organização 0009 processada e validada")
+            return True
             
+        except PreencherComprasError:
+            raise
+        except Exception as e:
+            raise PreencherComprasError(
+                f"Erro ao preencher organização: {e}"
+            )
+    
+    # ========================================================================
+    # PREENCHER CAMPOS (PORTÁVEL)
+    # ========================================================================
+    
+    def _preencher_campos(self) -> bool:
+        """
+        Preenche todos os campos de compras (PORTÁVEL).
+        
+        Returns:
+            True se preencheu com sucesso
+        """
+        print("[5/6] Preenchendo campos...")
+        
+        try:
             base = (
                 "wnd[0]/usr/subSCREEN_3000_RESIZING_AREA:SAPLBUS_LOCATOR:2036/"
                 "subSCREEN_1010_RIGHT_AREA:SAPLBUPA_DIALOG_JOEL:1000/"
@@ -180,93 +371,250 @@ class PreencherCompras:
                 "ssubSCREEN_1100_TABSTRIP_AREA:SAPLBUSS:0028/ssubGENSUB:SAPLBUSS:7032"
             )
             
-            # Checkboxes (VALIDADOS)
-            print("   [4.1] Marcando checkboxes...")
+            # ============================================================
+            # CHECKBOXES (VALIDADOS)
+            # ============================================================
+            print("   [5.1] Marcando checkboxes...")
+            
             checkboxes = [
-                {'nome': 'WEBRE', 'id': f"{base}/subA04P03:SAPLCVI_FS_UI_VENDOR_PORG:0074/chkGS_LFM1-WEBRE", 'obrigatorio': True},
-                {'nome': 'LEBRE', 'id': f"{base}/subA05P01:SAPLCVI_FS_UI_VENDOR_ENH:0048/chkGS_LFM1-LEBRE", 'obrigatorio': True},
-                {'nome': 'KZAUT', 'id': f"{base}/subA07P03:SAPLCVI_FS_UI_VENDOR_ENH:0027/chkGS_LFM1-KZAUT", 'obrigatorio': False}
+                {
+                    'nome': 'WEBRE (Revisão fatura EM)',
+                    'id': f"{base}/subA04P03:SAPLCVI_FS_UI_VENDOR_PORG:0074/chkGS_LFM1-WEBRE",
+                    'obrigatorio': True
+                },
+                {
+                    'nome': 'LEBRE (Revisão fatura serviços)',
+                    'id': f"{base}/subA05P01:SAPLCVI_FS_UI_VENDOR_ENH:0048/chkGS_LFM1-LEBRE",
+                    'obrigatorio': True
+                },
+                {
+                    'nome': 'KZAUT (Geração automática OC)',
+                    'id': f"{base}/subA07P03:SAPLCVI_FS_UI_VENDOR_ENH:0027/chkGS_LFM1-KZAUT",
+                    'obrigatorio': False
+                }
             ]
             
             for cb in checkboxes:
                 try:
+                    # Aguardar elemento existir
+                    if not self._wait_for_element(cb['id'], timeout=3.0, element_name=cb['nome']):
+                        if cb['obrigatorio']:
+                            raise PreencherComprasError(
+                                f"Checkbox obrigatório não encontrado: {cb['nome']}"
+                            )
+                        print(f"   [AVISO] {cb['nome']} não encontrado")
+                        continue
+                    
+                    # Marcar checkbox
                     campo = self.session.findById(cb['id'])
                     campo.selected = True
                     
                     # VALIDAÇÃO
                     if not campo.selected:
                         if cb['obrigatorio']:
-                            raise Exception(f"{cb['nome']} é obrigatório e não marcou!")
+                            raise PreencherComprasError(
+                                f"Checkbox obrigatório não marcou: {cb['nome']}"
+                            )
+                        print(f"   [AVISO] {cb['nome']} não marcou")
+                    else:
+                        print(f"   [OK] ✅ {cb['nome']}")
                     
-                    print(f"   [OK] {cb['nome']} ✓")
+                except PreencherComprasError:
+                    raise
                 except Exception as e:
                     if cb['obrigatorio']:
-                        print(f"   [ERRO] {cb['nome']} CRÍTICO: {e}")
-                        return False
+                        raise PreencherComprasError(
+                            f"Erro ao marcar checkbox obrigatório {cb['nome']}: {e}"
+                        )
                     print(f"   [AVISO] {cb['nome']}: {e}")
             
-            # Campos de texto (VALIDADOS)
-            print("   [4.2] Preenchendo campos de texto...")
+            # ============================================================
+            # CAMPOS DE TEXTO (VALIDADOS)
+            # ============================================================
+            print("   [5.2] Preenchendo campos de texto...")
             
             prazo = self.dados['geral'].get('prazo_pagamento', 'BRFG')
             frete = self.dados['geral'].get('modalidade_frete', 'CIF')
             
             campos = [
-                {'nome': 'Moeda', 'id': f"{base}/subA02P01:SAPLCVI_FS_UI_VENDOR_PORG:0076/ctxtGS_LFM1-WAERS", 'valor': 'BRL'},
-                {'nome': 'Condições pag', 'id': f"{base}/subA02P02:SAPLCVI_FS_UI_VENDOR_PORG:0086/ctxtGS_LFM1-ZTERM", 'valor': prazo},
-                {'nome': 'Incoterms', 'id': f"{base}/subA02P03:SAPLCVI_FS_UI_VENDOR_PORG:0085/ctxtGS_LFM1-INCO1", 'valor': frete},
-                {'nome': 'Local incoterms', 'id': f"{base}/subA02P03:SAPLCVI_FS_UI_VENDOR_PORG:0085/ctxtGS_LFM1-INCO2_L", 'valor': 'FABRICA'},
-                {'nome': 'Controle preço', 'id': f"{base}/subA07P04:SAPLCVI_FS_UI_VENDOR_ENH:0028/ctxtGS_LFM1-MEPRF", 'valor': '1'},
-                {'nome': 'Controle confirm', 'id': f"{base}/subA07P07:SAPLCVI_FS_UI_VENDOR_ENH:0010/ctxtGS_LFM1-BSTAE", 'valor': 'Z004'}
+                {
+                    'nome': 'Moeda (BRL)',
+                    'id': f"{base}/subA02P01:SAPLCVI_FS_UI_VENDOR_PORG:0076/ctxtGS_LFM1-WAERS",
+                    'valor': 'BRL',
+                    'obrigatorio': True
+                },
+                {
+                    'nome': f'Condições pagamento ({prazo})',
+                    'id': f"{base}/subA02P02:SAPLCVI_FS_UI_VENDOR_PORG:0086/ctxtGS_LFM1-ZTERM",
+                    'valor': prazo,
+                    'obrigatorio': True
+                },
+                {
+                    'nome': f'Incoterms ({frete})',
+                    'id': f"{base}/subA02P03:SAPLCVI_FS_UI_VENDOR_PORG:0085/ctxtGS_LFM1-INCO1",
+                    'valor': frete,
+                    'obrigatorio': True
+                },
+                {
+                    'nome': 'Local incoterms (FABRICA)',
+                    'id': f"{base}/subA02P03:SAPLCVI_FS_UI_VENDOR_PORG:0085/ctxtGS_LFM1-INCO2_L",
+                    'valor': 'FABRICA',
+                    'obrigatorio': True
+                },
+                {
+                    'nome': 'Controle preço (1)',
+                    'id': f"{base}/subA07P04:SAPLCVI_FS_UI_VENDOR_ENH:0028/ctxtGS_LFM1-MEPRF",
+                    'valor': '1',
+                    'obrigatorio': True
+                },
+                {
+                    'nome': 'Controle confirmação (Z004)',
+                    'id': f"{base}/subA07P07:SAPLCVI_FS_UI_VENDOR_ENH:0010/ctxtGS_LFM1-BSTAE",
+                    'valor': 'Z004',
+                    'obrigatorio': True
+                }
             ]
+            
+            ultimo_campo_id = None
             
             for campo in campos:
                 try:
+                    # Aguardar elemento existir
+                    if not self._wait_for_element(
+                        campo['id'], 
+                        timeout=3.0, 
+                        element_name=campo['nome']
+                    ):
+                        if campo['obrigatorio']:
+                            raise PreencherComprasError(
+                                f"Campo obrigatório não encontrado: {campo['nome']}"
+                            )
+                        print(f"   [AVISO] {campo['nome']} não encontrado")
+                        continue
+                    
+                    # Preencher campo
                     elem = self.session.findById(campo['id'])
                     elem.text = campo['valor']
-                    print(f"   [OK] {campo['nome']}: {campo['valor']}")
+                    
+                    # Guardar último campo para dar foco depois
+                    ultimo_campo_id = campo['id']
+                    
+                    print(f"   [OK] {campo['nome']}")
+                    
+                except PreencherComprasError:
+                    raise
                 except Exception as e:
+                    if campo['obrigatorio']:
+                        raise PreencherComprasError(
+                            f"Erro ao preencher campo obrigatório {campo['nome']}: {e}"
+                        )
                     print(f"   [AVISO] {campo['nome']}: {e}")
             
-            # PASSO 6: ENTER final
-            print("\n[5/5] Finalizando...")
-            try:
-                ultimo_id = f"{base}/subA07P04:SAPLCVI_FS_UI_VENDOR_ENH:0028/ctxtGS_LFM1-MEPRF"
-                ultimo = self.session.findById(ultimo_id)
-                ultimo.setFocus()
-                ultimo.caretPosition = 1
-                
-                self._wait_sap_ready(timeout=1.0)
-                self.session.findById("wnd[0]").sendVKey(0)
-                self._wait_sap_ready(timeout=2.0)
-                print("[OK] ENTER final")
-            except:
-                pass
+            # ============================================================
+            # FINALIZAR - DAR FOCO NO ÚLTIMO CAMPO E PRESSIONAR ENTER
+            # ============================================================
+            print("   [5.3] Finalizando preenchimento...")
             
-            print("\n[OK] ✅✅✅ Compras cadastrado (aguardando salvamento)")
-            print("="*70 + "\n")
+            if ultimo_campo_id:
+                try:
+                    ultimo = self.session.findById(ultimo_campo_id)
+                    ultimo.setFocus()
+                    ultimo.caretPosition = len(str(ultimo.text))
+                    
+                    # ESPERA ATIVA antes de ENTER
+                    self._wait_sap_ready(timeout=2.0)
+                    
+                    # Pressionar ENTER
+                    self.session.findById("wnd[0]").sendVKey(0)
+                    
+                    print("[INFO] ENTER final pressionado")
+                    
+                    # ESPERA ATIVA após ENTER
+                    if not self._wait_sap_ready(timeout=5.0):
+                        print("[AVISO] SAP ainda processando após 5s")
+                    
+                    # PAUSA EXTRA
+                    time.sleep(0.5)
+                    
+                except Exception as e:
+                    print(f"[AVISO] Erro ao finalizar: {e}")
+            
+            print("[OK] ✅ Campos preenchidos")
             return True
             
+        except PreencherComprasError:
+            raise
         except Exception as e:
-            print(f"[ERRO] Falha: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
+            raise PreencherComprasError(
+                f"Erro ao preencher campos: {e}"
+            )
     
-    def executar(self) -> bool:
+    # ========================================================================
+    # MÉTODO PRINCIPAL
+    # ========================================================================
+    
+    def adicionar_papel_compras(self) -> bool:
         """
-        Executa cadastro de Compras (SEM SALVAMENTO).
+        Adiciona papel FLVN01 (Compras) - PORTÁVEL.
+        NÃO salva - apenas preenche.
         
         Returns:
             True se cadastrou com sucesso
         """
         print("\n" + "="*70)
-        print("MÓDULO: COMPRAS")
+        print("CADASTRANDO COMPRAS (FLVN01) - PORTÁVEL")
+        print("="*70)
+        
+        try:
+            # ETAPA 1: Adicionar papel
+            if not self._adicionar_papel():
+                raise PreencherComprasError("Falha ao adicionar papel")
+            
+            # ETAPA 2: Selecionar FLVN01
+            if not self._selecionar_flvn01():
+                raise PreencherComprasError("Falha ao selecionar FLVN01")
+            
+            # ETAPA 3: Confirmar popup (se aparecer)
+            self._confirmar_popup_se_aparecer()
+            
+            # ETAPA 4: Preencher organização (CRÍTICO)
+            if not self._preencher_organizacao():
+                raise PreencherComprasError("Falha ao preencher organização")
+            
+            # ETAPA 5: Preencher campos
+            if not self._preencher_campos():
+                raise PreencherComprasError("Falha ao preencher campos")
+            
+            print("\n[OK] ✅✅✅ Compras cadastrado (aguardando salvamento)")
+            print("="*70 + "\n")
+            return True
+            
+        except PreencherComprasError as e:
+            print(f"\n[ERRO] ❌ Falha ao cadastrar Compras:")
+            print(f"       {str(e)}")
+            print("="*70 + "\n")
+            raise
+        except Exception as e:
+            print(f"\n[ERRO] ❌ Erro inesperado:")
+            print(f"       {str(e)}")
+            print("="*70 + "\n")
+            raise PreencherComprasError(
+                f"Erro inesperado durante cadastro de Compras: {e}"
+            )
+    
+    def executar(self) -> bool:
+        """
+        Executa cadastro de Compras (SEM SALVAMENTO) - PORTÁVEL.
+        
+        Returns:
+            True se cadastrou com sucesso
+        """
+        print("\n" + "="*70)
+        print("MÓDULO: COMPRAS (PORTÁVEL)")
         print("="*70)
         
         try:
             if not self.adicionar_papel_compras():
-                print("[ERRO] Falha ao cadastrar Compras")
                 return False
             
             print("\n[OK] ✅✅✅ Compras COMPLETO (aguardando salvamento)")
