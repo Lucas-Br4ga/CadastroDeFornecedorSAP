@@ -1,0 +1,14 @@
+[project]
+name = "cadastrodefornecedorsap"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "camelot-py>=1.0.9",
+    "ghostscript>=0.8.1",
+    "pypdf2>=3.0.1",
+    "pyside6>=6.10.1",
+    "pywin32>=311",
+    "tabula>=1.0.5",
+]

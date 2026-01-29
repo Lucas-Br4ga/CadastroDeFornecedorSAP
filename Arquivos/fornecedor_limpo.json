@@ -1,31 +1,31 @@
 {
     "empresa": {
-        "razao_social": "ISOCALD SERVICE LTDA",
-        "nome_fantasia": "ISOCALD SERVICE",
-        "cnpj": "56006223000110",
-        "inscricao_estadual": "0049475990038",
-        "inscricao_municipal": ""
+        "razao_social": "FORT LUB DISTRIBUIDORA LTDA",
+        "nome_fantasia": "FORT LUB",
+        "cnpj": "61247612000178",
+        "inscricao_estadual": "0052212740093",
+        "inscricao_municipal": "72228220"
     },
     "endereco": {
-        "rua": "ROD BR",
-        "numero": "354",
-        "complemento": "970-KM476",
-        "bairro": "CALCITA",
-        "cidade": "ARCOS",
+        "rua": "R JASMIM",
+        "numero": "15",
+        "complemento": "",
+        "bairro": "CHACARAS BOA VISTA",
+        "cidade": "CONTAGEM",
         "estado": "MG",
-        "cep": "35600-350"
+        "cep": "32150-180"
     },
     "contato": {
-        "celular": "(37) 3261-7791",
-        "email_comercial": "comercial1.service@isocald.com.br",
-        "email_fiscal": "iscal.service@isocald.com.br",
-        "celular_secundario": "(31) 99837-9870"
+        "celular": "(99) 9999-9999",
+        "email_comercial": "assistente03.ctg@fortlub.com",
+        "email_fiscal": "",
+        "celular_secundario": ""
     },
     "bancario": {
         "banco": "",
-        "agencia": "3481",
-        "conta_corrente": "13002645-1",
-        "codigo_banco": "033"
+        "agencia": "3409",
+        "conta_corrente": "6294-4",
+        "codigo_banco": "001"
     },
     "geral": {
         "prazo_pagamento": "BRFG",
